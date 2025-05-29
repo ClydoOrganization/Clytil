@@ -21,9 +21,8 @@
 package net.clydo.clytil.reflect;
 
 import lombok.experimental.UtilityClass;
-import lombok.val;
-import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -34,67 +33,61 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class Methods {
 
-    public <O, R> MethodInvoker<O, R> of(
-            @NotNull final String clazz,
-            @NotNull final String name,
-            @NotNull final Class<?>... argTypes
+    public <O, R> @NotNull R get(
+            @NotNull final java.lang.reflect.Method method,
+            @Nullable final O owner,
+            @NotNull final Object... args
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
-        Validates.requireParam(argTypes, "argTypes");
+        if (owner == null && !Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Owner cannot be null for non-static method %s::%s",
+                            "unknown", method.getName()
+                    )
+            );
+        }
 
         try {
-            return Methods.of(
-                    Class.forName(clazz),
-                    name,
-                    argTypes
-            );
-        } catch (ClassNotFoundException e) {
+            return (R) method.invoke(owner, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(
                     String.format(
-                            "Failed to find class %s!",
-                            clazz
+                            "Failed to call %s::%s(%s) with args [%s]!",
+                            owner != null ? owner.getClass() : "unknown", method.getName(),
+                            Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.joining(", ")),
+                            Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
                     ), e
             );
         }
     }
 
-    public <O, R> MethodInvoker<O, R> of(
+    public <O, R> @NotNull R get(
             @NotNull final Class<?> clazz,
-            @NotNull final String name,
-            @NotNull final Class<?>... argTypes
+            @NotNull final java.lang.reflect.Method method,
+            @Nullable final O owner,
+            @NotNull final Object... args
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
-        Validates.requireParam(argTypes, "argTypes");
+        if (owner == null && !Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Owner cannot be null for non-static method %s::%s",
+                            clazz, method.getName()
+                    )
+            );
+        }
 
-        val method = Reflects.getMethod(clazz, name, argTypes);
-
-        method.setAccessible(true);
-
-        return (owner, args) -> {
-            if (owner == null && !Modifier.isStatic(method.getModifiers())) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "Owner cannot be null for non-static method %s::%s",
-                                clazz, name
-                        )
-                );
-            }
-
-            try {
-                return (R) method.invoke(owner, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(
-                        String.format(
-                                "Failed to call %s::%s(%s) with args [%s]!",
-                                clazz, name,
-                                Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", ")),
-                                Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
-                        ), e
-                );
-            }
-        };
+        try {
+            return (R) method.invoke(owner, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(
+                    String.format(
+                            "Failed to call %s::%s(%s) with args [%s]!",
+                            clazz, method.getName(),
+                            Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.joining(", ")),
+                            Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
+                    ), e
+            );
+        }
     }
 
 }
