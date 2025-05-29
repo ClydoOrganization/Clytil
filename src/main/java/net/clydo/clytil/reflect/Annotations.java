@@ -101,7 +101,7 @@ public class Annotations {
         Validates.requireParam(annotationClass, "annotationClass");
 
         val direct = element.getAnnotation(annotationClass);
-        if (direct != null || recursive) {
+        if (direct != null || !recursive) {
             return direct;
         }
 
