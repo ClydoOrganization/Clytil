@@ -5,6 +5,8 @@ import lombok.val;
 import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
+
 @UtilityClass
 public class MethodInvokers {
 
@@ -43,6 +45,16 @@ public class MethodInvokers {
         Validates.requireParam(argTypes, "argTypes");
 
         val method = Reflects.getMethod(clazz, name, argTypes);
+
+        return MethodInvokers.of(clazz, method);
+    }
+
+    public <O, R> MethodInvoker<O, R> of(
+            @NotNull final Class<?> clazz,
+            @NotNull final Method method
+    ) {
+        Validates.requireParam(clazz, "class");
+        Validates.requireParam(method, "method");
 
         method.setAccessible(true);
 
