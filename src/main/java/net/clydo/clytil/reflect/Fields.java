@@ -21,6 +21,7 @@
 package net.clydo.clytil.reflect;
 
 import lombok.experimental.UtilityClass;
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,17 @@ import java.lang.reflect.Modifier;
 @SuppressWarnings("unchecked")
 @UtilityClass
 public class Fields {
+
+    public <V> void set(
+            @NotNull final java.lang.reflect.Field field,
+            @NotNull final Object owner,
+            @Nullable final V value
+    ) {
+        Validates.requireParam(field, "field");
+        Validates.requireParam(owner, "owner");
+
+        set(owner.getClass(), field, owner, value);
+    }
 
     public <V> void set(
             @NotNull final Class<?> clazz,
