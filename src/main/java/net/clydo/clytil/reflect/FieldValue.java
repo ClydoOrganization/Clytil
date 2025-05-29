@@ -20,28 +20,13 @@
 
 package net.clydo.clytil.reflect;
 
-import net.clydo.clytil.iface.value.FieldValue;
-import net.clydo.clytil.iface.value.Value;
+public interface FieldValue<O, V> {
 
-public interface Field<O, V> extends Value<V>, FieldValue<O, V> {
-
-    @Override
     void set(final O owner, final V value);
 
-    @Override
     V get(final O owner);
 
-    @Override
-    default void set(final V value) {
-        this.set(null, value);
-    }
-
-    @Override
-    default V get() {
-        return this.get(null);
-    }
-
-    default Field<O, V> toCacheable() {
+    default FieldValue<O, V> toCacheable() {
         return Fields.cacheable(this);
     }
 

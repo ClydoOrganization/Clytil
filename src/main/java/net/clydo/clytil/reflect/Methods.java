@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class Methods {
 
-    public <O, R> Method<O, R> of(
+    public <O, R> MethodInvoker<O, R> of(
             @NotNull final String clazz,
             @NotNull final String name,
             @NotNull final Class<?>... argTypes
@@ -59,7 +59,7 @@ public class Methods {
         }
     }
 
-    public <O, R> Method<O, R> of(
+    public <O, R> MethodInvoker<O, R> of(
             @NotNull final Class<?> clazz,
             @NotNull final String name,
             @NotNull final Class<?>... argTypes
@@ -70,37 +70,30 @@ public class Methods {
 
         val method = Reflects.getMethod(clazz, name, argTypes);
 
-        return new Method<>() {
+        method.setAccessible(true);
 
-            @Override
-            public R invoke(final Object owner, final @NotNull Object... args) {
-                if (owner == null && !this.isStaticMethod(method)) {
-                    throw new IllegalArgumentException(
-                            String.format(
-                                    "Owner cannot be null for non-static method %s::%s",
-                                    clazz, name
-                            )
-                    );
-                }
-
-                try {
-                    return (R) method.invoke(owner, args);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Failed to call %s::%s(%s) with args [%s]!",
-                                    clazz, name,
-                                    Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", ")),
-                                    Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
-                            ), e
-                    );
-                }
+        return (owner, args) -> {
+            if (owner == null && !Modifier.isStatic(method.getModifiers())) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Owner cannot be null for non-static method %s::%s",
+                                clazz, name
+                        )
+                );
             }
 
-            private boolean isStaticMethod(@NotNull java.lang.reflect.Method method) {
-                return Modifier.isStatic(method.getModifiers());
+            try {
+                return (R) method.invoke(owner, args);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(
+                        String.format(
+                                "Failed to call %s::%s(%s) with args [%s]!",
+                                clazz, name,
+                                Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", ")),
+                                Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
+                        ), e
+                );
             }
-
         };
     }
 

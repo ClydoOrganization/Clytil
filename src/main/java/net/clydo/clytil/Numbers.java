@@ -179,10 +179,10 @@ public class Numbers {
      * Checks if the provided type is {@link BigDecimal}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link BigDecimal}, {@code false} otherwise
      */
-    public <T extends Number> boolean isBigDecimal(Class<T> type) {
+    public <T> boolean isBigDecimal(Class<T> type) {
         return type == BigDecimal.class;
     }
 
@@ -190,10 +190,10 @@ public class Numbers {
      * Checks if the provided type is {@link BigInteger}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link BigInteger}, {@code false} otherwise
      */
-    public <T extends Number> boolean isBigInteger(Class<T> type) {
+    public <T> boolean isBigInteger(Class<T> type) {
         return type == BigInteger.class;
     }
 
@@ -201,10 +201,10 @@ public class Numbers {
      * Checks if the provided type is {@link Long}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Long}, {@code false} otherwise
      */
-    public <T extends Number> boolean isLong(Class<T> type) {
+    public <T> boolean isLong(Class<T> type) {
         return type == Long.class || type == long.class;
     }
 
@@ -212,10 +212,10 @@ public class Numbers {
      * Checks if the provided type is {@link Double}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Double}, {@code false} otherwise
      */
-    public <T extends Number> boolean isDouble(Class<T> type) {
+    public <T> boolean isDouble(Class<T> type) {
         return type == Double.class || type == double.class;
     }
 
@@ -223,10 +223,10 @@ public class Numbers {
      * Checks if the provided type is {@link Float}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Float}, {@code false} otherwise
      */
-    public <T extends Number> boolean isFloat(Class<T> type) {
+    public <T> boolean isFloat(Class<T> type) {
         return type == Float.class || type == float.class;
     }
 
@@ -234,10 +234,10 @@ public class Numbers {
      * Checks if the provided type is {@link Integer}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Integer}, {@code false} otherwise
      */
-    public <T extends Number> boolean isInteger(Class<T> type) {
+    public <T> boolean isInteger(Class<T> type) {
         return type == Integer.class || type == int.class;
     }
 
@@ -245,10 +245,10 @@ public class Numbers {
      * Checks if the provided type is {@link Short}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Short}, {@code false} otherwise
      */
-    public <T extends Number> boolean isShort(Class<T> type) {
+    public <T> boolean isShort(Class<T> type) {
         return type == Short.class || type == short.class;
     }
 
@@ -256,10 +256,10 @@ public class Numbers {
      * Checks if the provided type is {@link Byte}.
      *
      * @param type the class type to check
-     * @param <T>  the type, which extends {@link Number}
+     * @param <T>  the type
      * @return {@code true} if the type is {@link Byte}, {@code false} otherwise
      */
-    public <T extends Number> boolean isByte(Class<T> type) {
+    public <T> boolean isByte(Class<T> type) {
         return type == Byte.class || type == byte.class;
     }
 }

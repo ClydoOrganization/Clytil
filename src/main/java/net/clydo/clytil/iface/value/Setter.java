@@ -25,4 +25,12 @@ public interface Setter<V> {
 
     void set(final V value);
 
+    default void set(final V value, boolean nullable) {
+        if (nullable && value == null) {
+            throw new IllegalArgumentException("Cannot set a null value");
+        }
+
+        this.set(value);
+    }
+
 }

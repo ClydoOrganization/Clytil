@@ -20,18 +20,10 @@
 
 package net.clydo.clytil.reflect;
 
-import net.clydo.clytil.iface.invoke.Invoker;
-import net.clydo.clytil.iface.invoke.MethodInvoker;
 import org.jetbrains.annotations.NotNull;
 
-public interface Method<O, R> extends Invoker<R>, MethodInvoker<O, R> {
+public interface MethodInvoker<O, R> {
 
-    @Override
-    R invoke(final Object owner, final @NotNull Object... args);
-
-    @Override
-    default R invoke(final @NotNull Object... args) {
-        return this.invoke(null, args);
-    }
+    R invoke(final O owner, @NotNull final Object... args);
 
 }

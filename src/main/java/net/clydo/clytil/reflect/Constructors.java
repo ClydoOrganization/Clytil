@@ -26,7 +26,6 @@ import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Ref;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -64,6 +63,8 @@ public class Constructors {
         Validates.requireParam(argTypes, "argTypes");
 
         val constructor = Reflects.getConstructor(clazz, argTypes);
+
+        constructor.setAccessible(true);
 
         return args -> {
             try {

@@ -20,9 +20,33 @@
 
 package net.clydo.clytil.iface.value;
 
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
+
+@SuppressWarnings("unchecked")
 @FunctionalInterface
 public interface Getter<V> {
 
     V get();
+
+    default <C extends V> C as(final @NotNull Class<C> type) {
+        val value = this.get();
+        return value != null ? type.cast(value) : null;
+    }
+
+    default <C extends V> C as() {
+        val value = this.get();
+        return value != null ? (C) value : null;
+    }
+
+    default <C> C unsafeAs(final @NotNull Class<C> type) {
+        val value = this.get();
+        return value != null ? type.cast(value) : null;
+    }
+
+    default <C> C unsafeAs() {
+        val value = this.get();
+        return value != null ? (C) value : null;
+    }
 
 }

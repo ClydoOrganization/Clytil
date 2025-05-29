@@ -35,12 +35,12 @@ import java.util.function.Function;
 @UtilityClass
 public class Fields {
 
-    public <O, T> @NotNull Field<O, T> cacheable(
-            @NotNull final Field<O, T> field
+    public <O, T> @NotNull FieldValue<O, T> cacheable(
+            @NotNull final FieldValue<O, T> fieldValue
     ) {
-        Validates.requireParam(field, "field");
+        Validates.requireParam(fieldValue, "field");
 
-        return new Field<>() {
+        return new FieldValue<>() {
 
             private Option<T> value;
 
@@ -53,7 +53,7 @@ public class Fields {
                     return;
                 }
 
-                field.set(owner, value);
+                fieldValue.set(owner, value);
             }
 
             @Override
@@ -64,7 +64,7 @@ public class Fields {
                     return this.value.orNull();
                 }
 
-                val value = field.get();
+                val value = fieldValue.get(owner);
                 this.value = Options.of(value);
                 return value;
             }
@@ -72,21 +72,21 @@ public class Fields {
         };
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final String clazz,
             @NotNull final String name
     ) {
         return Fields.of(clazz, name, Function.identity(), Function.identity());
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final Class<?> clazz,
             @NotNull final String name
     ) {
         return Fields.of(clazz, name, Function.identity(), Function.identity());
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final String clazz,
             @NotNull final String name,
             @NotNull final Function<T, T> getMapper
@@ -94,7 +94,7 @@ public class Fields {
         return Fields.of(clazz, name, Function.identity(), getMapper);
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final Class<?> clazz,
             @NotNull final String name,
             @NotNull final Function<T, T> getMapper
@@ -102,7 +102,7 @@ public class Fields {
         return Fields.of(clazz, name, Function.identity(), getMapper);
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final String clazz,
             @NotNull final String name,
             @NotNull final Function<T, T> setMapper,
@@ -123,7 +123,7 @@ public class Fields {
         }
     }
 
-    public <O, T> @NotNull Field<O, T> of(
+    public <O, T> @NotNull FieldValue<O, T> of(
             @NotNull final Class<?> clazz,
             @NotNull final String name,
             @NotNull final Function<T, T> setMapper,
@@ -134,66 +134,103 @@ public class Fields {
 
         val field = Reflects.getField(clazz, name);
 
-        return new Field<>() {
+        return Fields.of(clazz, field, setMapper, getMapper);
+    }
+
+    public <O, T> @NotNull FieldValue<O, T> of(
+            @NotNull final Class<?> clazz,
+            @NotNull final java.lang.reflect.Field field
+    ) {
+        return Fields.of(clazz, field, Function.identity(), Function.identity());
+    }
+
+    public <O, T> @NotNull FieldValue<O, T> of(
+            @NotNull final Class<?> clazz,
+            @NotNull final java.lang.reflect.Field field,
+            @NotNull final Function<T, T> getMapper
+    ) {
+        return Fields.of(clazz, field, Function.identity(), getMapper);
+    }
+
+    public <O, T> @NotNull FieldValue<O, T> of(
+            @NotNull final Class<?> clazz,
+            @NotNull final java.lang.reflect.Field field,
+            @NotNull final Function<T, T> setMapper,
+            @NotNull final Function<T, T> getMapper
+    ) {
+        field.setAccessible(true);
+
+        return new FieldValue<>() {
 
             @Override
             public void set(
                     @Nullable final O owner,
-                    @Nullable T value
+                    @Nullable final T value
             ) {
-                if (owner == null && !this.isStaticField(field)) {
-                    throw new IllegalArgumentException(
-                            String.format(
-                                    "Owner cannot be null for non-static field %s::%s",
-                                    clazz, name
-                            )
-                    );
-                }
-
-                value = setMapper.apply(value);
-
-                try {
-                    field.set(owner, value);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Failed to set %s::%s to %s on %s!",
-                                    clazz, name, value, owner
-                            ), e
-                    );
-                }
+                Fields.set(clazz, field, owner, setMapper.apply(value));
             }
 
             @Override
             public T get(
                     @Nullable final O owner
             ) {
-                if (owner == null && !this.isStaticField(field)) {
-                    throw new IllegalArgumentException(
-                            String.format(
-                                    "Owner cannot be null for non-static field %s::%s",
-                                    clazz, name
-                            )
-                    );
-                }
-
-                try {
-                    return getMapper.apply((T) field.get(owner));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Failed to get %s::%s on %s!",
-                                    clazz, name, owner
-                            ), e
-                    );
-                }
-            }
-
-            private boolean isStaticField(@NotNull java.lang.reflect.Field field) {
-                return Modifier.isStatic(field.getModifiers());
+                return getMapper.apply(Fields.get(clazz, field, owner));
             }
 
         };
+    }
+
+    public <O, V> void set(
+            @NotNull final Class<?> clazz,
+            @NotNull final java.lang.reflect.Field field,
+            @Nullable final O owner,
+            @Nullable final V value
+    ) {
+        if (owner == null && !Modifier.isStatic(field.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Owner cannot be null for non-static field %s::%s",
+                            clazz, field.getName()
+                    )
+            );
+        }
+
+        try {
+            field.set(owner, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    String.format(
+                            "Failed to set %s::%s to %s on %s!",
+                            clazz, field.getName(), value, owner
+                    ), e
+            );
+        }
+    }
+
+    public <O, V> @NotNull V get(
+            @NotNull final Class<?> clazz,
+            @NotNull final java.lang.reflect.Field field,
+            @Nullable final O owner
+    ) {
+        if (owner == null && !Modifier.isStatic(field.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Owner cannot be null for non-static field %s::%s",
+                            clazz, field.getName()
+                    )
+            );
+        }
+
+        try {
+            return (V) field.get(owner);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    String.format(
+                            "Failed to get %s::%s on %s!",
+                            clazz, field.getName(), owner
+                    ), e
+            );
+        }
     }
 
 }

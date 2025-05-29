@@ -21,7 +21,6 @@
 package net.clydo.clytil.reflect;
 
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,9 +42,7 @@ public class Reflects {
         Validates.requireParam(argTypes, "argTypes");
 
         try {
-            val constructor = (java.lang.reflect.Constructor<T>) clazz.getDeclaredConstructor(argTypes);
-            constructor.setAccessible(true);
-            return constructor;
+            return (Constructor<T>) clazz.getDeclaredConstructor(argTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     String.format(
@@ -67,9 +64,7 @@ public class Reflects {
         Validates.requireParam(argTypes, "argTypes");
 
         try {
-            val method = clazz.getDeclaredMethod(name, argTypes);
-            method.setAccessible(true);
-            return method;
+            return clazz.getDeclaredMethod(name, argTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     String.format(
@@ -89,9 +84,7 @@ public class Reflects {
         Validates.requireParam(name, "name");
 
         try {
-            val field = clazz.getDeclaredField(name);
-            field.setAccessible(true);
-            return field;
+            return clazz.getDeclaredField(name);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(
                     String.format(

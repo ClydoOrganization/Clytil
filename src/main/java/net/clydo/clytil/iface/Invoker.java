@@ -18,7 +18,7 @@
  * Copyright (C) 2025 ClydoNetwork
  */
 
-package net.clydo.clytil.iface.invoke;
+package net.clydo.clytil.iface;
 
 import org.jetbrains.annotations.NotNull;
 
