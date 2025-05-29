@@ -35,41 +35,62 @@ import java.util.function.Function;
 @UtilityClass
 public class Fields {
 
+    public <O, V> @NotNull FieldValue<O, V> fromLambda(
+            @NotNull final FieldSetter<O, V> setter,
+            @NotNull final FieldGetter<O, V> getter
+    ) {
+        Validates.requireParam(setter, "setter");
+        Validates.requireParam(getter, "getter");
+
+        return new FieldValue<>() {
+
+            @Override
+            public void set(
+                    @Nullable final O owner,
+                    @Nullable final V value
+            ) {
+                setter.set(owner, value);
+            }
+
+            @Override
+            public V get(
+                    @Nullable final O owner
+            ) {
+                return getter.get(owner);
+            }
+
+        };
+    }
+
     public <O, T> @NotNull FieldValue<O, T> cacheable(
             @NotNull final FieldValue<O, T> fieldValue
     ) {
         Validates.requireParam(fieldValue, "field");
 
-        return new FieldValue<>() {
+        val holder = new Object[1];
 
-            private Option<T> value;
+        return fromLambda(
+                (owner, value) -> {
+                    val option = (Option<T>) holder[0];
 
-            @Override
-            public void set(
-                    @Nullable final O owner,
-                    @Nullable final T value
-            ) {
-                if (this.value != null && this.value.contains(value)) {
-                    return;
+                    if (option != null && option.contains(value)) {
+                        return;
+                    }
+
+                    fieldValue.set(owner, value);
+                },
+                owner -> {
+                    val option = (Option<T>) holder[0];
+
+                    if (option != null) {
+                        return option.orNull();
+                    }
+
+                    val value = fieldValue.get(owner);
+                    holder[0] = Options.of(value);
+                    return value;
                 }
-
-                fieldValue.set(owner, value);
-            }
-
-            @Override
-            public T get(
-                    @Nullable final O owner
-            ) {
-                if (this.value != null) {
-                    return this.value.orNull();
-                }
-
-                val value = fieldValue.get(owner);
-                this.value = Options.of(value);
-                return value;
-            }
-
-        };
+        );
     }
 
     public <O, T> @NotNull FieldValue<O, T> of(
@@ -160,24 +181,10 @@ public class Fields {
     ) {
         field.setAccessible(true);
 
-        return new FieldValue<>() {
-
-            @Override
-            public void set(
-                    @Nullable final O owner,
-                    @Nullable final T value
-            ) {
-                Fields.set(clazz, field, owner, setMapper.apply(value));
-            }
-
-            @Override
-            public T get(
-                    @Nullable final O owner
-            ) {
-                return getMapper.apply(Fields.get(clazz, field, owner));
-            }
-
-        };
+        return fromLambda(
+                (owner, value) -> Fields.set(clazz, field, owner, setMapper.apply(value)),
+                owner -> getMapper.apply(Fields.get(clazz, field, owner))
+        );
     }
 
     public <O, V> void set(

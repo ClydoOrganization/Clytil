@@ -20,10 +20,8 @@
 
 package net.clydo.clytil.reflect;
 
-public interface FieldValue<O, V> extends FieldSetter<O, V>, FieldGetter<O, V> {
+public interface FieldSetter<O, V> {
 
-    default FieldValue<O, V> toCacheable() {
-        return Fields.cacheable(this);
-    }
+    void set(final O owner, final V value);
 
 }
