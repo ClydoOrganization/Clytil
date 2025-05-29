@@ -57,7 +57,32 @@ public class Fields {
         }
     }
 
-    public <V> @NotNull V get(
+    public <V> V get(
+            @NotNull final java.lang.reflect.Field field,
+            @Nullable final Object owner
+    ) {
+        if (owner == null && !Modifier.isStatic(field.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Owner cannot be null for non-static field %s::%s",
+                            "unknown", field.getName()
+                    )
+            );
+        }
+
+        try {
+            return (V) field.get(owner);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    String.format(
+                            "Failed to get %s::%s on %s!",
+                            owner != null ? owner.getClass() : "unknown", field.getName(), owner
+                    ), e
+            );
+        }
+    }
+
+    public <V> V get(
             @NotNull final Class<?> clazz,
             @NotNull final java.lang.reflect.Field field,
             @Nullable final Object owner
