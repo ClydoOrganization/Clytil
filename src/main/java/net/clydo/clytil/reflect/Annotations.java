@@ -87,4 +87,24 @@ public class Annotations {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public <A extends Annotation> A getByMeta(
+            @NotNull final AnnotatedElement element,
+            @NotNull final Class<? extends Annotation> metaAnnotationClass
+    ) {
+        Validates.requireParam(element, "element");
+        Validates.requireParam(metaAnnotationClass, "metaAnnotationClass");
+
+        for (Annotation annotation : element.getAnnotations()) {
+            val annotationType = annotation.annotationType();
+            if (!annotationType.isAnnotationPresent(metaAnnotationClass)) {
+                continue;
+            }
+
+            return (A) annotation;
+        }
+
+        return null;
+    }
+
 }
