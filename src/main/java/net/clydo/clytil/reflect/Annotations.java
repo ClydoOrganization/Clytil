@@ -19,18 +19,28 @@ public class Annotations {
         Validates.requireParam(element, "element");
         Validates.requireParam(annotationClass, "annotationClass");
 
-        return require(element, annotationClass, true);
+        return require(element, annotationClass, false);
     }
 
-    public <A extends Annotation> A require(
-            @NotNull AnnotatedElement element,
-            @NotNull Class<A> annotationClass,
-            boolean inRoot
+    public <A extends Annotation> A requireRecursive(
+            @NotNull final AnnotatedElement element,
+            @NotNull final Class<A> annotationClass
     ) {
         Validates.requireParam(element, "element");
         Validates.requireParam(annotationClass, "annotationClass");
 
-        val annotation = get(element, annotationClass, inRoot);
+        return require(element, annotationClass, true);
+    }
+
+    public <A extends Annotation> A require(
+            @NotNull final AnnotatedElement element,
+            @NotNull final Class<A> annotationClass,
+            final boolean recursive
+    ) {
+        Validates.requireParam(element, "element");
+        Validates.requireParam(annotationClass, "annotationClass");
+
+        val annotation = get(element, annotationClass, recursive);
         if (annotation == null) {
             throwNotAnnotated(element, annotationClass);
         }
