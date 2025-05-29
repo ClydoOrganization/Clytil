@@ -30,10 +30,10 @@ import java.lang.reflect.Modifier;
 @UtilityClass
 public class Fields {
 
-    public <O, V> void set(
+    public <V> void set(
             @NotNull final Class<?> clazz,
             @NotNull final java.lang.reflect.Field field,
-            @Nullable final O owner,
+            @Nullable final Object owner,
             @Nullable final V value
     ) {
         if (owner == null && !Modifier.isStatic(field.getModifiers())) {
@@ -57,10 +57,10 @@ public class Fields {
         }
     }
 
-    public <O, V> @NotNull V get(
+    public <V> @NotNull V get(
             @NotNull final Class<?> clazz,
             @NotNull final java.lang.reflect.Field field,
-            @Nullable final O owner
+            @Nullable final Object owner
     ) {
         if (owner == null && !Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException(
