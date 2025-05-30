@@ -32,27 +32,40 @@ public class Validates {
     public static <T> @NotNull T require(
             @Nullable final T value
     ) {
-        return Validates.require(value, "value must not be null");
+        if (value == null) {
+            throw new NullPointerException("value must not be null");
+        }
+        return value;
     }
 
     public static <T> @NotNull T requireValue(
             @Nullable final T value,
             @NotNull final String name
     ) {
-        return Validates.require(value, String.format("'%s' must not be null", name));
+        if (value == null) {
+            throw new NullPointerException(String.format("'%s' must not be null", name));
+        }
+        return value;
     }
 
     public static <T> @NotNull T requireParam(
             @Nullable final T value,
             @NotNull final String name
     ) {
-        return Validates.require(value, String.format("param '%s' must not be null", name));
+        if (value == null) {
+            throw new NullPointerException(String.format("param '%s' must not be null", name));
+        }
+        return value;
     }
 
     public static <T> @NotNull T requireField(
             @Nullable final T value,
-            @NotNull final String name) {
-        return Validates.require(value, String.format("field '%s' must not be null", name));
+            @NotNull final String name
+    ) {
+        if (value == null) {
+            throw new NullPointerException(String.format("field '%s' must not be null", name));
+        }
+        return value;
     }
 
     public static <T> @NotNull T require(
