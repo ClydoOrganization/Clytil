@@ -24,7 +24,6 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import net.clydo.clytil.Validates;
 import net.clydo.clytil.option.Option;
-import net.clydo.clytil.option.Options;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,12 +65,10 @@ public class FieldValues {
     ) {
         Validates.requireParam(fieldValue, "field");
 
-        val holder = new Option[1];
+        val option = Option.<V>none();
 
         return fromLambda(
                 (owner, value) -> {
-                    val option = (Option<V>) holder[0];
-
                     if (option != null && option.contains(value)) {
                         return;
                     }
@@ -79,14 +76,12 @@ public class FieldValues {
                     fieldValue.set(owner, value);
                 },
                 owner -> {
-                    val option = (Option<V>) holder[0];
-
-                    if (option != null) {
+                    if (option.isSome()) {
                         return option.orNull();
                     }
 
                     val value = fieldValue.get(owner);
-                    holder[0] = Options.of(value);
+                    option.replace(value);
                     return value;
                 }
         );

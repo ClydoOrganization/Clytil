@@ -21,6 +21,8 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
+import net.clydo.clytil.iface.XRunnable;
+import net.clydo.clytil.iface.XSupplier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -29,7 +31,9 @@ import java.util.function.Supplier;
 @UtilityClass
 public class Throws {
 
-    public <X extends Throwable> void ignore(@NotNull Throws.XRunnable<X> runnable) {
+    public <X extends Throwable> void ignore(
+            @NotNull final XRunnable<X> runnable
+    ) {
         Objects.requireNonNull(runnable, "runnable must not be null");
 
         try {
@@ -38,7 +42,48 @@ public class Throws {
         }
     }
 
-    public <T, X extends Throwable> T ignoreOr(@NotNull Throws.XSupplier<T, X> supplier, @NotNull Supplier<T> otherwise) {
+    public <X extends Throwable> void ignoreOr(
+            @NotNull final XRunnable<X> runnable,
+            @NotNull final Runnable otherwise
+    ) {
+        Objects.requireNonNull(runnable, "runnable must not be null");
+
+        try {
+            runnable.run();
+        } catch (Throwable ignored) {
+            otherwise.run();
+        }
+    }
+
+    public <T, X extends Throwable> T ignoreOr(
+            @NotNull final XSupplier<T, X> supplier
+    ) {
+        Objects.requireNonNull(supplier, "supplier must not be null");
+
+        try {
+            return supplier.get();
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    public <T, X extends Throwable> T ignoreOr(
+            @NotNull final XSupplier<T, X> supplier,
+            final T otherwise
+    ) {
+        Objects.requireNonNull(supplier, "supplier must not be null");
+
+        try {
+            return supplier.get();
+        } catch (Throwable ignored) {
+            return otherwise;
+        }
+    }
+
+    public <T, X extends Throwable> T ignoreOr(
+            @NotNull final XSupplier<T, X> supplier,
+            @NotNull final Supplier<T> otherwise
+    ) {
         Objects.requireNonNull(supplier, "supplier must not be null");
 
         try {
@@ -46,14 +91,6 @@ public class Throws {
         } catch (Throwable ignored) {
             return otherwise.get();
         }
-    }
-
-    public interface XRunnable<X extends Throwable> {
-        void run() throws X;
-    }
-
-    public interface XSupplier<T, X extends Throwable> {
-        T get() throws X;
     }
 
 }
