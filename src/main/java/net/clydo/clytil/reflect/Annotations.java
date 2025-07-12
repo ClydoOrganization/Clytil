@@ -36,8 +36,8 @@ public class Annotations {
             @NotNull final AnnotatedElement element,
             @NotNull final Class<A> annotationClass
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         return require(element, annotationClass, false);
     }
@@ -46,8 +46,8 @@ public class Annotations {
             @NotNull final AnnotatedElement element,
             @NotNull final Class<A> annotationClass
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         return require(element, annotationClass, true);
     }
@@ -57,8 +57,8 @@ public class Annotations {
             @NotNull final Class<A> annotationClass,
             final boolean recursive
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         val annotation = get(element, annotationClass, recursive);
         if (annotation == null) {
@@ -76,8 +76,8 @@ public class Annotations {
             @NotNull final AnnotatedElement element,
             @NotNull final Class<A> annotationClass
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         return get(element, annotationClass, false);
     }
@@ -86,8 +86,8 @@ public class Annotations {
             @NotNull final AnnotatedElement element,
             @NotNull final Class<A> annotationClass
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         return get(element, annotationClass, true);
     }
@@ -97,8 +97,8 @@ public class Annotations {
             @NotNull final Class<A> annotationClass,
             final boolean recursive
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(annotationClass, "annotationClass");
+        Validates.require(element, "element");
+        Validates.require(annotationClass, "annotationClass");
 
         val direct = element.getAnnotation(annotationClass);
         if (direct != null || !recursive) {
@@ -122,8 +122,8 @@ public class Annotations {
             @NotNull final AnnotatedElement element,
             @NotNull final Class<? extends Annotation> metaAnnotationClass
     ) {
-        Validates.requireParam(element, "element");
-        Validates.requireParam(metaAnnotationClass, "metaAnnotationClass");
+        Validates.require(element, "element");
+        Validates.require(metaAnnotationClass, "metaAnnotationClass");
 
         for (Annotation annotation : element.getAnnotations()) {
             val annotationType = annotation.annotationType();

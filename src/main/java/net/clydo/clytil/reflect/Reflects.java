@@ -38,8 +38,8 @@ public class Reflects {
             @NotNull final Class<?> clazz,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(argTypes, "argTypes");
 
         try {
             return (Constructor<T>) clazz.getDeclaredConstructor(argTypes);
@@ -59,9 +59,9 @@ public class Reflects {
             @NotNull final String name,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
+        Validates.require(argTypes, "argTypes");
 
         try {
             return clazz.getDeclaredMethod(name, argTypes);
@@ -80,8 +80,8 @@ public class Reflects {
             @NotNull final Class<?> clazz,
             @NotNull final String name
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
 
         try {
             return clazz.getDeclaredField(name);

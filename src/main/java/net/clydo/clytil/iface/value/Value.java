@@ -33,8 +33,8 @@ public interface Value<V> extends Setter<V>, Getter<V> {
             @NotNull final Setter<V> setter,
             @NotNull final Getter<V> getter
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return new Value<>() {
 
@@ -55,7 +55,7 @@ public interface Value<V> extends Setter<V>, Getter<V> {
             @NotNull final FieldValue<Object, V> fieldValue,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(fieldValue, "field");
+        Validates.require(fieldValue, "field");
 
         return fromLambda(
                 value -> fieldValue.set(owner, value),
@@ -68,8 +68,8 @@ public interface Value<V> extends Setter<V>, Getter<V> {
             @NotNull final MethodInvoker<Object, V> getter,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return fromLambda(
                 value -> setter.invoke(owner, value),

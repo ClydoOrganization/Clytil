@@ -35,9 +35,9 @@ public class MethodInvokers {
             @NotNull final String name,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
+        Validates.require(argTypes, "argTypes");
 
         try {
             return MethodInvokers.of(
@@ -60,9 +60,9 @@ public class MethodInvokers {
             @NotNull final String name,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
+        Validates.require(argTypes, "argTypes");
 
         val method = Reflects.getMethod(clazz, name, argTypes);
 
@@ -73,8 +73,8 @@ public class MethodInvokers {
             @NotNull final Class<?> clazz,
             @NotNull final Method method
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(method, "method");
+        Validates.require(clazz, "class");
+        Validates.require(method, "method");
 
         method.setAccessible(true);
 

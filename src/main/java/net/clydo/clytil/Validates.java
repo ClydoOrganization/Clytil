@@ -24,21 +24,13 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 @UtilityClass
 public class Validates {
 
-    public static <T> @NotNull T require(
-            @Nullable final T value
-    ) {
-        if (value == null) {
-            throw new NullPointerException("value must not be null");
-        }
-        return value;
-    }
-
-    public static <T> @NotNull T requireValue(
+    public <T> @NotNull T require(
             @Nullable final T value,
             @NotNull final String name
     ) {
@@ -48,27 +40,7 @@ public class Validates {
         return value;
     }
 
-    public static <T> @NotNull T requireParam(
-            @Nullable final T value,
-            @NotNull final String name
-    ) {
-        if (value == null) {
-            throw new NullPointerException(String.format("param '%s' must not be null", name));
-        }
-        return value;
-    }
-
-    public static <T> @NotNull T requireField(
-            @Nullable final T value,
-            @NotNull final String name
-    ) {
-        if (value == null) {
-            throw new NullPointerException(String.format("field '%s' must not be null", name));
-        }
-        return value;
-    }
-
-    public static <T> @NotNull T require(
+    public <T> @NotNull T requireLazy(
             @Nullable final T value,
             @NotNull final Supplier<String> message
     ) {
@@ -78,7 +50,7 @@ public class Validates {
         return value;
     }
 
-    public static <T> @NotNull T require(
+    public <T> @NotNull T requireMsg(
             @Nullable final T value,
             @NotNull final String message
     ) {
@@ -86,6 +58,253 @@ public class Validates {
             throw new NullPointerException(message);
         }
         return value;
+    }
+
+    // int versions
+    public int requirePositive(
+            final int value,
+            @NotNull final String name
+    ) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(String.format("%s must be positive", name));
+        }
+
+        return value;
+    }
+
+    public int requireNonNegative(
+            final int value,
+            @NotNull final String name
+    ) {
+        if (value < 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-negative", name));
+        }
+
+        return value;
+    }
+
+    public int requireNegative(
+            final int value,
+            @NotNull final String name
+    ) {
+        if (value >= 0) {
+            throw new IllegalArgumentException(String.format("%s must be negative", name));
+        }
+
+        return value;
+    }
+
+    public int requireNonPositive(
+            final int value,
+            @NotNull final String name
+    ) {
+        if (value > 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-positive", name));
+        }
+
+        return value;
+    }
+
+    public int requireInRange(
+            final int value,
+            final int min,
+            final int max,
+            @NotNull final String name
+    ) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(String.format("%s must be between %d and %d", name, min, max));
+        }
+
+        return value;
+    }
+
+    // float versions
+    public float requirePositive(
+            final float value,
+            @NotNull final String name
+    ) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(String.format("%s must be positive", name));
+        }
+
+        return value;
+    }
+
+    public float requireNonNegative(
+            final float value,
+            @NotNull final String name
+    ) {
+        if (value < 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-negative", name));
+        }
+
+        return value;
+    }
+
+    public float requireNegative(
+            final float value,
+            @NotNull final String name
+    ) {
+        if (value >= 0) {
+            throw new IllegalArgumentException(String.format("%s must be negative", name));
+        }
+
+        return value;
+    }
+
+    public float requireNonPositive(
+            final float value,
+            @NotNull final String name
+    ) {
+        if (value > 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-positive", name));
+        }
+
+        return value;
+    }
+
+    public float requireInRange(
+            final float value,
+            final float min,
+            final float max,
+            @NotNull final String name
+    ) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(String.format("%s must be between %f and %f", name, min, max));
+        }
+
+        return value;
+    }
+
+    // long versions
+    public long requirePositive(
+            final long value,
+            @NotNull final String name
+    ) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(String.format("%s must be positive", name));
+        }
+
+        return value;
+    }
+
+    public long requireNonNegative(
+            final long value,
+            @NotNull final String name
+    ) {
+        if (value < 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-negative", name));
+        }
+
+        return value;
+    }
+
+    public long requireNegative(
+            final long value,
+            @NotNull final String name
+    ) {
+        if (value >= 0) {
+            throw new IllegalArgumentException(String.format("%s must be negative", name));
+        }
+
+        return value;
+    }
+
+    public long requireNonPositive(
+            final long value,
+            @NotNull final String name
+    ) {
+        if (value > 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-positive", name));
+        }
+
+        return value;
+    }
+
+    public long requireInRange(
+            final long value,
+            final long min,
+            final long max,
+            @NotNull final String name
+    ) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(String.format("%s must be between %d and %d", name, min, max));
+        }
+
+        return value;
+    }
+
+    // double versions
+    public double requirePositive(
+            final double value,
+            @NotNull final String name
+    ) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(String.format("%s must be positive", name));
+        }
+
+        return value;
+    }
+
+    public double requireNonNegative(
+            final double value,
+            @NotNull final String name
+    ) {
+        if (value < 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-negative", name));
+        }
+
+        return value;
+    }
+
+    public double requireNegative(
+            final double value,
+            @NotNull final String name
+    ) {
+        if (value >= 0) {
+            throw new IllegalArgumentException(String.format("%s must be negative", name));
+        }
+
+        return value;
+    }
+
+    public double requireNonPositive(
+            final double value,
+            @NotNull final String name
+    ) {
+        if (value > 0) {
+            throw new IllegalArgumentException(String.format("%s must be non-positive", name));
+        }
+
+        return value;
+    }
+
+    public double requireInRange(
+            final double value,
+            final double min,
+            final double max,
+            @NotNull final String name
+    ) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(String.format("%s must be between %f and %f", name, min, max));
+        }
+
+        return value;
+    }
+
+    // collections
+
+    public <C extends Collection<?>> @NotNull C require(
+            @Nullable final C collection,
+            @NotNull final String name
+    ) {
+        if (collection == null) {
+            throw new NullPointerException(String.format("'%s' must not be null", name));
+        }
+        if (collection.isEmpty()) {
+            throw new NullPointerException(String.format("'%s' must not be empty", name));
+        }
+        return collection;
     }
 
 }

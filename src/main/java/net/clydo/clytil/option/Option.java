@@ -255,6 +255,11 @@ public class Option<V> {
     }
 
     @NotNull
+    public V get() {
+        return this.orThrow();
+    }
+
+    @NotNull
     public V orThrow() {
         if (this.isNone()) {
             throw new NoSuchElementException("None has no value");

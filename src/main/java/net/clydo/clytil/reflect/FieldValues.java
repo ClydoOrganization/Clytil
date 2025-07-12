@@ -37,8 +37,8 @@ public class FieldValues {
             @NotNull final FieldSetter<O, V> setter,
             @NotNull final FieldGetter<O, V> getter
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return new FieldValue<>() {
 
@@ -63,7 +63,7 @@ public class FieldValues {
     public <O, V> @NotNull FieldValue<O, V> cacheable(
             @NotNull final FieldValue<O, V> fieldValue
     ) {
-        Validates.requireParam(fieldValue, "field");
+        Validates.require(fieldValue, "field");
 
         val option = Option.<V>none();
 
@@ -123,8 +123,8 @@ public class FieldValues {
             @NotNull final Function<T, T> setMapper,
             @NotNull final Function<T, T> getMapper
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
 
         try {
             return FieldValues.of(Class.forName(clazz), name, setMapper, getMapper);
@@ -144,8 +144,8 @@ public class FieldValues {
             @NotNull final Function<T, T> setMapper,
             @NotNull final Function<T, T> getMapper
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(name, "name");
+        Validates.require(clazz, "class");
+        Validates.require(name, "name");
 
         val field = Reflects.getField(clazz, name);
 

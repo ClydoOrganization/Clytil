@@ -21,24 +21,17 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
-import net.clydo.clytil.option.Option;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 @UtilityClass
-public class Enums {
+public class Lists {
 
-    public <T extends Enum<T>> Option<T> valueOf(
-            @NotNull final Class<T> clazz,
-            @NotNull final String name
+    public <T> T last(
+            @NotNull final List<T> list
     ) {
-        Validates.require(clazz, "clazz");
-        Validates.require(name, "name");
-
-        try {
-            return Option.some(Enum.valueOf(clazz, name));
-        } catch (Throwable t) {
-            return Option.none();
-        }
+        return list.get(list.size() - 1);
     }
 
 }

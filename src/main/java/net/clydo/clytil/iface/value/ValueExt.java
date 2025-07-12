@@ -47,8 +47,8 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
             @NotNull final Setter<V> setter,
             @NotNull final Getter<V> getter
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return new ValueExt<>() {
 
@@ -74,7 +74,7 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
             @NotNull final FieldValue<Object, V> fieldValue,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(fieldValue, "field");
+        Validates.require(fieldValue, "field");
 
         return fromLambda(
                 value -> fieldValue.set(owner, value),
@@ -87,7 +87,7 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
             @NotNull final FieldValue<Object, V> fieldValue,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(fieldValue, "field");
+        Validates.require(fieldValue, "field");
 
         return fromLambda(
                 defaultValue,
@@ -101,8 +101,8 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
             @NotNull final MethodInvoker<Object, V> getter,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return fromLambda(
                 value -> setter.invoke(owner, value),
@@ -116,8 +116,8 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
             @NotNull final MethodInvoker<Object, V> getter,
             @Nullable final Object owner
     ) {
-        Validates.requireParam(setter, "setter");
-        Validates.requireParam(getter, "getter");
+        Validates.require(setter, "setter");
+        Validates.require(getter, "getter");
 
         return fromLambda(
                 defaultValue,

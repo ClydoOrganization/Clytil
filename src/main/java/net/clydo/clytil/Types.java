@@ -43,32 +43,26 @@ public class Types {
     public static final List<Class<?>> STRING = List.of(String.class);
     public static final List<Class<?>> VOID = List.of(Void.class, void.class);
 
-    public static final List<Class<?>> NUMERICS = Inits.of(() ->
-            List.copyOf(
-                    Stream.of(BYTE, SHORT, INT, FLOAT, LONG, DOUBLE)
-                            .flatMap(List::stream)
-                            .toList()
-            )
+    public static final List<Class<?>> NUMERICS = List.copyOf(
+            Stream.of(BYTE, SHORT, INT, FLOAT, LONG, DOUBLE)
+                    .flatMap(List::stream)
+                    .toList()
     );
 
-    public static final List<Class<?>> INTEGERS = Inits.of(() ->
-            List.copyOf(
-                    Stream.of(BYTE, SHORT, INT, LONG)
-                            .flatMap(List::stream)
-                            .toList()
-            )
+    public static final List<Class<?>> INTEGERS = List.copyOf(
+            Stream.of(BYTE, SHORT, INT, LONG)
+                    .flatMap(List::stream)
+                    .toList()
     );
 
-    public static final List<Class<?>> FLOATS = Inits.of(() ->
-            List.copyOf(
-                    Stream.of(FLOAT, DOUBLE)
-                            .flatMap(List::stream)
-                            .toList()
-            )
+    public static final List<Class<?>> FLOATS = List.copyOf(
+            Stream.of(FLOAT, DOUBLE)
+                    .flatMap(List::stream)
+                    .toList()
     );
 
     public Class<?> getValueType(@NotNull final Member member) {
-        Validates.requireParam(member, "member");
+        Validates.require(member, "member");
 
         if (member instanceof Field field) {
             return field.getType();

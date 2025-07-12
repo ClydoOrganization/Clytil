@@ -21,6 +21,10 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
+import net.clydo.clytil.iface.CharPredicate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @UtilityClass
 public class Strings {
@@ -65,5 +69,76 @@ public class Strings {
         return true;
     }
 
+    public String truncate(
+            @Nullable final String str,
+            final int maxLength,
+            final boolean addEllipsis
+    ) {
+        return truncate(str, 0, maxLength, addEllipsis);
+    }
+
+    public String truncate(
+            @Nullable final String str,
+            final int offset,
+            final int maxLength,
+            final boolean addEllipsis
+    ) {
+        Validates.requireNonNegative(offset, "offset");
+        Validates.requireNonNegative(maxLength, "maxLength");
+
+        if (str == null) {
+            return null;
+        }
+
+        if (maxLength == 0) {
+            return "";
+        }
+
+        if (offset > str.length()) {
+            return "";
+        }
+
+        if (str.length() - offset <= maxLength) {
+            return str.substring(offset);
+        }
+
+        var endIndex = Math.min(offset + maxLength, str.length());
+
+        // ✅ Avoid cutting surrogate pairs
+        if (endIndex > offset && Character.isHighSurrogate(str.charAt(endIndex - 1))) {
+            endIndex--;
+        }
+
+        if (addEllipsis && maxLength > 3 && endIndex - offset > 3) {
+            return str.substring(offset, endIndex - 3) + "...";
+        }
+
+        return str.substring(
+                offset,
+                endIndex
+        );
+    }
+
+    public String filter(
+            @NotNull final String string,
+            @NotNull final CharPredicate predicate
+    ) {
+        val stringBuilder = new StringBuilder();
+
+        for (val c : string.toCharArray()) {
+            if (predicate.test(c)) {
+                stringBuilder.append(c);
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public int freeLength(
+            @NotNull final CharSequence seq,
+            final int maxLength
+    ) {
+        return Math.max(0, maxLength - seq.length());
+    }
 
 }

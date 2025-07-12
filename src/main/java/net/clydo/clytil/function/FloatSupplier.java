@@ -18,27 +18,27 @@
  * Copyright (C) 2025 ClydoNetwork
  */
 
-package net.clydo.clytil;
+package net.clydo.clytil.function;
 
-import lombok.experimental.UtilityClass;
-import net.clydo.clytil.option.Option;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-@UtilityClass
-public class Enums {
+import java.util.function.Supplier;
 
-    public <T extends Enum<T>> Option<T> valueOf(
-            @NotNull final Class<T> clazz,
-            @NotNull final String name
+public interface FloatSupplier {
+
+    float get();
+
+    @Contract(pure = true)
+    static @NotNull FloatSupplier of(
+            @NotNull final Supplier<Float> supplier
     ) {
-        Validates.require(clazz, "clazz");
-        Validates.require(name, "name");
+        return supplier::get;
+    }
 
-        try {
-            return Option.some(Enum.valueOf(clazz, name));
-        } catch (Throwable t) {
-            return Option.none();
-        }
+    @Contract(pure = true)
+    static @NotNull FloatSupplier ofConst(final float value) {
+        return () -> value;
     }
 
 }

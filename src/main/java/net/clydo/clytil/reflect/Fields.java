@@ -36,8 +36,8 @@ public class Fields {
             @NotNull final Object owner,
             @Nullable final V value
     ) {
-        Validates.requireParam(field, "field");
-        Validates.requireParam(owner, "owner");
+        Validates.require(field, "field");
+        Validates.require(owner, "owner");
 
         set(owner.getClass(), field, owner, value);
     }

@@ -18,27 +18,11 @@
  * Copyright (C) 2025 ClydoNetwork
  */
 
-package net.clydo.clytil;
+package net.clydo.clytil.iface;
 
-import lombok.experimental.UtilityClass;
-import net.clydo.clytil.option.Option;
-import org.jetbrains.annotations.NotNull;
+@FunctionalInterface
+public interface CharPredicate {
 
-@UtilityClass
-public class Enums {
-
-    public <T extends Enum<T>> Option<T> valueOf(
-            @NotNull final Class<T> clazz,
-            @NotNull final String name
-    ) {
-        Validates.require(clazz, "clazz");
-        Validates.require(name, "name");
-
-        try {
-            return Option.some(Enum.valueOf(clazz, name));
-        } catch (Throwable t) {
-            return Option.none();
-        }
-    }
+    boolean test(final char chr);
 
 }

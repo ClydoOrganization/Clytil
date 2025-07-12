@@ -37,8 +37,8 @@ public class Constructors {
             @NotNull final String clazz,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(argTypes, "argTypes");
 
         try {
             return Constructors.of(
@@ -59,8 +59,8 @@ public class Constructors {
             @NotNull final Class<?> clazz,
             @NotNull final Class<?>... argTypes
     ) {
-        Validates.requireParam(clazz, "class");
-        Validates.requireParam(argTypes, "argTypes");
+        Validates.require(clazz, "class");
+        Validates.require(argTypes, "argTypes");
 
         val constructor = Reflects.getConstructor(clazz, argTypes);
 

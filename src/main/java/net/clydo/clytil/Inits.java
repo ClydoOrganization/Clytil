@@ -70,7 +70,7 @@ public class Inits {
             T t,
             @NotNull Consumer<? super T>... consumers
     ) {
-        Validates.requireParam(consumers, "consumers");
+        Validates.require(consumers, "consumers");
 
         for (val consumer : consumers) {
             consumer.accept(t);
@@ -84,7 +84,7 @@ public class Inits {
             T t,
             @NotNull Function<? super T, ? extends R>... functions
     ) {
-        Validates.requireParam(functions, "functions");
+        Validates.require(functions, "functions");
 
         R result = null;
 
@@ -98,7 +98,7 @@ public class Inits {
     public <T> T of(
             @NotNull Supplier<T> supplier
     ) {
-        Validates.requireParam(supplier, "supplier");
+        Validates.require(supplier, "supplier");
 
         return supplier.get();
     }
@@ -107,7 +107,7 @@ public class Inits {
             T t,
             @NotNull Consumer<? super T> consumer
     ) {
-        Validates.requireParam(consumer, "consumer");
+        Validates.require(consumer, "consumer");
 
         consumer.accept(t);
         return t;
@@ -117,7 +117,7 @@ public class Inits {
             T t,
             @NotNull Function<? super T, ? extends R> function
     ) {
-        Validates.requireParam(function, "function");
+        Validates.require(function, "function");
 
         return function.apply(t);
     }
