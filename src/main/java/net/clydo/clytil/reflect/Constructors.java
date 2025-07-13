@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class Constructors {
 
-    public <T extends @NotNull Object> Constructor<T> of(
+    public <T> Constructor<T> of(
             @NotNull final String clazz,
             @NotNull final Class<?>... argTypes
     ) {
@@ -55,7 +55,7 @@ public class Constructors {
         }
     }
 
-    public <T extends @NotNull Object> Constructor<T> of(
+    public <T> Constructor<T> of(
             @NotNull final Class<?> clazz,
             @NotNull final Class<?>... argTypes
     ) {

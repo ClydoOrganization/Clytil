@@ -22,7 +22,7 @@ package net.clydo.clytil.reflect;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface Constructor<T extends @NotNull Object> {
+public interface Constructor<T> {
 
     @NotNull
     T newInstance(

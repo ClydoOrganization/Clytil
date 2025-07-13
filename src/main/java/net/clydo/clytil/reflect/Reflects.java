@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class Reflects {
 
     @SuppressWarnings("unchecked")
-    public <T extends @NotNull Object> Constructor<T> getConstructor(
+    public <T> Constructor<T> getConstructor(
             @NotNull final Class<?> clazz,
             @NotNull final Class<?>... argTypes
     ) {
