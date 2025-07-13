@@ -35,15 +35,15 @@ public class Constructors {
 
     public <T> Constructor<T> of(
             @NotNull final String clazz,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
         try {
-            return Constructors.of(
+            return (Constructor<T>) Constructors.of(
                     Class.forName(clazz),
-                    argTypes
+                    parameterTypes
             );
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(
@@ -56,13 +56,26 @@ public class Constructors {
     }
 
     public <T> Constructor<T> of(
-            @NotNull final Class<?> clazz,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<T> clazz,
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
-        val constructor = Reflects.getConstructor(clazz, argTypes);
+        val constructor = Reflects.getConstructor(clazz, parameterTypes);
+
+        return Constructors.of(
+                clazz,
+                constructor
+        );
+    }
+
+    public <T> Constructor<T> of(
+            @NotNull final Class<T> clazz,
+            @NotNull final java.lang.reflect.Constructor<T> constructor
+    ) {
+        Validates.require(clazz, "class");
+        Validates.require(constructor, "constructor");
 
         constructor.setAccessible(true);
 
@@ -74,7 +87,7 @@ public class Constructors {
                         String.format(
                                 "Failed to construct %s(%s) with args [%s]!",
                                 clazz,
-                                Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", ")),
+                                Arrays.stream(constructor.getParameterTypes()).map(Class::getName).collect(Collectors.joining(", ")),
                                 Arrays.stream(args).map(Object::toString).collect(Collectors.joining(", "))
                         ), e
                 );

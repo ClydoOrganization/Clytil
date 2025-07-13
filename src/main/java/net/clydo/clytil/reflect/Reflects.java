@@ -33,22 +33,21 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class Reflects {
 
-    @SuppressWarnings("unchecked")
     public <T> Constructor<T> getConstructor(
-            @NotNull final Class<?> clazz,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<T> clazz,
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
         try {
-            return (Constructor<T>) clazz.getDeclaredConstructor(argTypes);
+            return clazz.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     String.format(
                             "Failed to find constructor %s(%s)!",
                             clazz,
-                            Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", "))
+                            Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(", "))
                     ), e
             );
         }
@@ -57,20 +56,20 @@ public class Reflects {
     public Method getMethod(
             @NotNull final Class<?> clazz,
             @NotNull final String name,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
         Validates.require(name, "name");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
         try {
-            return clazz.getDeclaredMethod(name, argTypes);
+            return clazz.getDeclaredMethod(name, parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     String.format(
                             "Failed to find method %s::%s(%s)!",
                             clazz, name,
-                            Arrays.stream(argTypes).map(Class::getName).collect(Collectors.joining(", "))
+                            Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(", "))
                     ), e
             );
         }

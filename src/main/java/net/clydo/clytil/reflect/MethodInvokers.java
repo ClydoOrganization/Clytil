@@ -33,17 +33,17 @@ public class MethodInvokers {
     public <O, R> MethodInvoker<O, R> of(
             @NotNull final String clazz,
             @NotNull final String name,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
         Validates.require(name, "name");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
         try {
             return MethodInvokers.of(
                     Class.forName(clazz),
                     name,
-                    argTypes
+                    parameterTypes
             );
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(
@@ -58,13 +58,13 @@ public class MethodInvokers {
     public <O, R> MethodInvoker<O, R> of(
             @NotNull final Class<?> clazz,
             @NotNull final String name,
-            @NotNull final Class<?>... argTypes
+            @NotNull final Class<?>... parameterTypes
     ) {
         Validates.require(clazz, "class");
         Validates.require(name, "name");
-        Validates.require(argTypes, "argTypes");
+        Validates.require(parameterTypes, "parameterTypes");
 
-        val method = Reflects.getMethod(clazz, name, argTypes);
+        val method = Reflects.getMethod(clazz, name, parameterTypes);
 
         return MethodInvokers.of(clazz, method);
     }
