@@ -25,6 +25,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -70,6 +71,28 @@ public class Primitives {
         Validates.require(type, "type");
 
         return WRAPPER_TO_PRIMITIVE.getOrDefault(type, type);
+    }
+
+    public static Type wrap(
+            @NotNull final Type type
+    ) {
+        Validates.require(type, "type");
+
+        if (type instanceof Class<?> clazz) {
+            return PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz);
+        }
+        return type;
+    }
+
+    public Type unwrap(
+            @NotNull final Type type
+    ) {
+        Validates.require(type, "type");
+
+        if (type instanceof Class<?> clazz) {
+            return WRAPPER_TO_PRIMITIVE.getOrDefault(clazz, clazz);
+        }
+        return type;
     }
 
     public boolean isPrimitive(
