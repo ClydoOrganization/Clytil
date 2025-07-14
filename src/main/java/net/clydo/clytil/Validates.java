@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @UtilityClass
@@ -303,6 +304,22 @@ public class Validates {
         }
         if (collection.isEmpty()) {
             throw new NullPointerException(String.format("'%s' must not be empty", name));
+        }
+        return collection;
+    }
+
+    public <C extends Collection<?>> @NotNull C requireFilled(
+            @Nullable final C collection,
+            @NotNull final String name
+    ) {
+        if (collection == null) {
+            throw new NullPointerException(String.format("'%s' must not be null", name));
+        }
+        if (collection.isEmpty()) {
+            throw new NullPointerException(String.format("'%s' must not be empty", name));
+        }
+        if (collection.stream().anyMatch(Objects::isNull)) {
+            throw new NullPointerException(String.format("'%s' items must not be null", name));
         }
         return collection;
     }
