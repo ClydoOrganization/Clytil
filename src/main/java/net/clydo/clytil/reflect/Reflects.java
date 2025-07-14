@@ -45,7 +45,8 @@ public class Reflects {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     String.format(
-                            "Failed to find constructor %s(%s)!",
+                            "Failed to find %s %s(%s)!",
+                            parameterTypes.length == 0 ? "no-arg constructor" : "constructor",
                             clazz,
                             Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(", "))
                     ), e
