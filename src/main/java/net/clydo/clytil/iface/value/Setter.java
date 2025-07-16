@@ -20,14 +20,19 @@
 
 package net.clydo.clytil.iface.value;
 
+import net.clydo.clytil.Validates;
+
 @FunctionalInterface
 public interface Setter<V> {
 
     void set(final V value);
 
-    default void set(final V value, boolean nullable) {
-        if (nullable && value == null) {
-            throw new IllegalArgumentException("Cannot set a null value");
+    default void set(
+            final V value,
+            final boolean isOptional
+    ) {
+        if (!isOptional) {
+            Validates.requireMsg(value, "Null value is not allowed when 'isOptional' is true");
         }
 
         this.set(value);
