@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -68,6 +69,20 @@ public class Types {
             return field.getType();
         } else if (member instanceof Method method) {
             return method.getReturnType();
+        }
+
+        throw new IllegalArgumentException(
+                "Unsupported member type: " + member.getClass().getName() + ". Expected Field or Method."
+        );
+    }
+
+    public Type getGenericValueType(@NotNull final Member member) {
+        Validates.require(member, "member");
+
+        if (member instanceof Field field) {
+            return field.getGenericType();
+        } else if (member instanceof Method method) {
+            return method.getGenericReturnType();
         }
 
         throw new IllegalArgumentException(
