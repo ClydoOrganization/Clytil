@@ -21,6 +21,7 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -68,12 +69,25 @@ public class Types {
         if (member instanceof Field field) {
             return field.getType();
         } else if (member instanceof Method method) {
-            return method.getReturnType();
+            val parameterCount = method.getParameterCount();
+            if (parameterCount == 0) {
+                val returnType = method.getReturnType();
+                if (returnType != void.class && returnType != Void.class) {
+                    return returnType;
+                }
+            } else if (parameterCount == 1) {
+                return method.getParameterTypes()[0];
+            }
         }
 
         throw new IllegalArgumentException(
-                "Unsupported member type: " + member.getClass().getName() + ". Expected Field or Method."
+                "Unsupported member type: " + member.getClass().getName() +
+                        ". Expected Field or Method (getter/setter)."
         );
+    }
+
+    public Void set() {
+        return null;
     }
 
     public Type getGenericValueType(@NotNull final Member member) {
@@ -82,11 +96,20 @@ public class Types {
         if (member instanceof Field field) {
             return field.getGenericType();
         } else if (member instanceof Method method) {
-            return method.getGenericReturnType();
+            val parameterCount = method.getParameterCount();
+            if (parameterCount == 0) {
+                val returnType = method.getGenericReturnType();
+                if (returnType != void.class && returnType != Void.class) {
+                    return returnType;
+                }
+            } else if (parameterCount == 1) {
+                return method.getGenericParameterTypes()[0];
+            }
         }
 
         throw new IllegalArgumentException(
-                "Unsupported member type: " + member.getClass().getName() + ". Expected Field or Method."
+                "Unsupported member type: " + member.getClass().getName() +
+                        ". Expected Field or Method (getter/setter)."
         );
     }
 
