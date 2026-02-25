@@ -15,37 +15,53 @@
  * along with Clytil. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2025 ClydoNetwork
+ * Copyright (C) 2025-2026 ClydoNetwork
  */
 
-package net.clydo.clytil.iface.value;
+package net.clydo.clytil.data;
 
 import lombok.val;
+import net.clydo.clytil.Numbers;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unchecked")
-@FunctionalInterface
-public interface Getter<V> {
+public interface DefaultValue<V> {
 
-    V get();
+    V def();
 
-    default <C extends V> C as(final @NotNull Class<C> type) {
-        val value = this.get();
+    default <U> V safeCast(U value) {
+        val def = this.def();
+        if (value != null) {
+            if (value instanceof Number valueNumber && def instanceof Number defaultNumber) {
+                value = (U) Numbers.cast(valueNumber, defaultNumber);
+            }
+
+            try {
+                return (V) value;
+            } catch (ClassCastException e) {
+                //LOGGER.warn("Cannot cast {} to {}", value, def);
+            }
+        }
+        return def;
+    }
+
+    default <C extends V> C defaultAs(@NotNull final Class<C> type) {
+        val value = this.def();
         return value != null ? type.cast(value) : null;
     }
 
-    default <C extends V> C as() {
-        val value = this.get();
+    default <C extends V> C defaultAs() {
+        val value = this.def();
         return value != null ? (C) value : null;
     }
 
-    default <C> C unsafeAs(final @NotNull Class<C> type) {
-        val value = this.get();
+    default <C> C unsafeDefaultAs(@NotNull final Class<C> type) {
+        val value = this.def();
         return value != null ? type.cast(value) : null;
     }
 
-    default <C> C unsafeAs() {
-        val value = this.get();
+    default <C> C unsafeDefaultAs() {
+        val value = this.def();
         return value != null ? (C) value : null;
     }
 

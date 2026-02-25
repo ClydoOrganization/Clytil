@@ -20,6 +20,7 @@
 
 package net.clydo.clytil.iface;
 
+import net.clydo.clytil.Array;
 import net.clydo.clytil.reflect.FieldValue;
 import net.clydo.clytil.reflect.MethodInvoker;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,7 @@ public interface Action {
             @NotNull final MethodInvoker<O, Action> methodInvoker,
             @Nullable final O owner
     ) {
-        return () -> methodInvoker.invoke(owner, new Object[0]);
+        return () -> methodInvoker.invoke(owner, Array.EMPTY);
     }
 
     static @NotNull <O> Action fromField(

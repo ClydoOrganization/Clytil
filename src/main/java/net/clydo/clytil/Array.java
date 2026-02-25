@@ -30,12 +30,12 @@ import java.util.function.Function;
 
 public class Array<T> {
 
-    private static final Object[] EMPTY_ARRAY = new Object[0];
+    public static final Object[] EMPTY = new Object[0];
 
     @NotNull
     private T[] array;
 
-    private Array(final @NotNull T[] array) {
+    private Array(@NotNull final T[] array) {
         this.array = Objects.requireNonNull(array, "array must not be null");
     }
 

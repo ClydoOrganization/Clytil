@@ -30,7 +30,7 @@ public interface DoubleSupplier extends java.util.function.DoubleSupplier {
     double get();
 
     /**
-     * @deprecated This method is deprecated and will be removed in a future release.
+     * @deprecated This method is deprecated.
      * Use {@link #get()} instead.
      */
     @Deprecated(forRemoval = true)
@@ -47,7 +47,7 @@ public interface DoubleSupplier extends java.util.function.DoubleSupplier {
     }
 
     @Contract(pure = true)
-    static @NotNull DoubleSupplier ofConst(final double value) {
+    static @NotNull DoubleSupplier constant(final double value) {
         return () -> value;
     }
 

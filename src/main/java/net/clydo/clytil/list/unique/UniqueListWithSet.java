@@ -172,17 +172,19 @@ public class UniqueListWithSet<E> extends UniqueList<E> {
         return List.copyOf(new UniqueListWithSet<>(superSubList, subSet));
     }
 
-    protected Set<E> createSetBasedOnList(final @NotNull Set<E> set, final List<E> list) {
+    @SuppressWarnings("unchecked")
+    protected Set<E> createSetBasedOnList(@NotNull final Set<E> set, final List<E> list) {
         Set<E> subSet;
-        if (set.getClass().equals(HashSet.class)) {
+        val setType = (Class<Set<E>>) set.getClass();
+        if (setType.equals(HashSet.class)) {
             subSet = new HashSet<>(list.size());
         } else {
             try {
-                subSet = set.getClass().getDeclaredConstructor(set.getClass()).newInstance(set);
-            } catch (final InstantiationException
-                           | IllegalAccessException
-                           | InvocationTargetException
-                           | NoSuchMethodException ie) {
+                subSet = setType.getDeclaredConstructor(setType).newInstance(set);
+            } catch (InstantiationException
+                     | IllegalAccessException
+                     | InvocationTargetException
+                     | NoSuchMethodException ie) {
                 subSet = new HashSet<>();
             }
         }

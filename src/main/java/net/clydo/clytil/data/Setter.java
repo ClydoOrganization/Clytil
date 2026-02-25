@@ -15,10 +15,10 @@
  * along with Clytil. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2025 ClydoNetwork
+ * Copyright (C) 2025-2026 ClydoNetwork
  */
 
-package net.clydo.clytil.iface.value;
+package net.clydo.clytil.data;
 
 import net.clydo.clytil.Validates;
 

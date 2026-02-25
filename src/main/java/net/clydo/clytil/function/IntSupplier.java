@@ -30,7 +30,7 @@ public interface IntSupplier extends java.util.function.IntSupplier {
     int get();
 
     /**
-     * @deprecated This method is deprecated and will be removed in a future release.
+     * @deprecated This method is deprecated.
      * Use {@link #get()} instead.
      */
     @Deprecated(forRemoval = true)
@@ -47,7 +47,7 @@ public interface IntSupplier extends java.util.function.IntSupplier {
     }
 
     @Contract(pure = true)
-    static @NotNull IntSupplier ofConst(final int value) {
+    static @NotNull IntSupplier constant(final int value) {
         return () -> value;
     }
 

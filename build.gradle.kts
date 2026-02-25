@@ -7,31 +7,33 @@ plugins {
 group = "net.clydo.clytil"
 version = "1.0.0"
 
-val javaVersion = 17
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
-java.sourceCompatibility = JavaVersion.toVersion(javaVersion)
-java.targetCompatibility = JavaVersion.toVersion(javaVersion)
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
+    withJavadocJar()
+}
 
 repositories {
     mavenCentral()
-    maven {
-        name = "JitPack"
-        url = uri("https://jitpack.io")
-    }
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
-
-    compileOnly("org.jetbrains:annotations:26.0.2")
-    annotationProcessor("org.jetbrains:annotations:26.0.2")
+    listOf(
+        "org.projectlombok:lombok:1.18.42",
+        "org.jetbrains:annotations:26.1.0"
+    ).forEach {
+        compileOnly(it)
+        annotationProcessor(it)
+    }
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+tasks.javadoc {
+    options.encoding = "UTF-8"
+}
+
+tasks.wrapper {
+    gradleVersion = "9.0.0"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 publishing {
@@ -40,9 +42,4 @@ publishing {
             from(components["java"])
         }
     }
-}
-
-tasks.withType<Wrapper> {
-    gradleVersion = "8.13"
-    distributionType = Wrapper.DistributionType.ALL
 }

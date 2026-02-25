@@ -28,6 +28,9 @@ import java.util.Objects;
 @FunctionalInterface
 public interface Condition {
 
+    Condition ALWAYS_TRUE = () -> true;
+    Condition ALWAYS_FALSE = () -> false;
+
     /**
      * Evaluates this condition.
      *
@@ -77,9 +80,8 @@ public interface Condition {
      */
     @Contract(pure = true)
     static @NotNull Condition alwaysTrue() {
-        return () -> true;
+        return ALWAYS_TRUE;
     }
-
 
     /**
      * Returns a condition that always evaluates to false.
@@ -88,7 +90,7 @@ public interface Condition {
      */
     @Contract(pure = true)
     static @NotNull Condition alwaysFalse() {
-        return () -> false;
+        return ALWAYS_FALSE;
     }
 
     /**

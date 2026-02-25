@@ -37,7 +37,7 @@ public interface FloatSupplier {
     }
 
     @Contract(pure = true)
-    static @NotNull FloatSupplier ofConst(final float value) {
+    static @NotNull FloatSupplier constant(final float value) {
         return () -> value;
     }
 
