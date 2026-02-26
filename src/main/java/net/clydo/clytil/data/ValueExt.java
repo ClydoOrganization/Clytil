@@ -113,7 +113,7 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
         }
 
         @Override
-        public V def() {
+        public V getDefault() {
             return this.defaultValue;
         }
 
@@ -266,7 +266,7 @@ public interface ValueExt<V> extends Value<V>, DefaultValue<V>, Resettable {
 
         @Override
         public V get() {
-            return this.def();
+            return this.getDefault();
         }
 
     }

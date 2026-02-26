@@ -27,10 +27,10 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unchecked")
 public interface DefaultValue<V> {
 
-    V def();
+    V getDefault();
 
     default <U> V safeCast(U value) {
-        val def = this.def();
+        val def = this.getDefault();
         if (value != null) {
             if (value instanceof Number valueNumber && def instanceof Number defaultNumber) {
                 value = (U) Numbers.cast(valueNumber, defaultNumber);
@@ -46,22 +46,22 @@ public interface DefaultValue<V> {
     }
 
     default <C extends V> C defaultAs(@NotNull final Class<C> type) {
-        val value = this.def();
+        val value = this.getDefault();
         return value != null ? type.cast(value) : null;
     }
 
     default <C extends V> C defaultAs() {
-        val value = this.def();
+        val value = this.getDefault();
         return value != null ? (C) value : null;
     }
 
     default <C> C unsafeDefaultAs(@NotNull final Class<C> type) {
-        val value = this.def();
+        val value = this.getDefault();
         return value != null ? type.cast(value) : null;
     }
 
     default <C> C unsafeDefaultAs() {
-        val value = this.def();
+        val value = this.getDefault();
         return value != null ? (C) value : null;
     }
 
