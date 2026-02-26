@@ -67,4 +67,17 @@ public class Defaults {
         return null;
     }
 
+    public <T> @Nullable T getOr(
+            @Nullable final T value,
+            @NotNull final Class<T> type
+    ) {
+        Validates.require(type, "type");
+
+        if (value != null) {
+            return value;
+        }
+
+        return get(type);
+    }
+
 }
