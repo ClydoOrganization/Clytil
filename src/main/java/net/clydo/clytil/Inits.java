@@ -24,65 +24,26 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 @UtilityClass
 public class Inits {
 
-    @SafeVarargs
-    public <T, R> R of(
-            @NotNull Supplier<T> supplier,
-            @NotNull Function<? super T, ? extends R>... functions
+    // ---------- Functions ----------
+
+    public <T, R> R apply(
+            @NotNull final T t,
+            @NotNull final Function<? super T, ? extends R> function
     ) {
-        val t = Inits.of(supplier);
-        return Inits.of(t, functions);
+        Validates.require(function, "function");
+
+        return function.apply(t);
     }
 
     @SafeVarargs
-    public <T> T of(
-            @NotNull Supplier<T> supplier,
-            @NotNull Consumer<? super T>... consumers
-    ) {
-        val t = Inits.of(supplier);
-        return Inits.of(t, consumers);
-    }
-
-    public <T, R> R of(
-            @NotNull Supplier<T> supplier,
-            @NotNull Function<? super T, ? extends R> function
-    ) {
-        val t = Inits.of(supplier);
-        return Inits.of(t, function);
-    }
-
-    public <T> T of(
-            @NotNull Supplier<T> supplier,
-            @NotNull Consumer<? super T> consumer
-    ) {
-        val t = Inits.of(supplier);
-        return Inits.of(t, consumer);
-    }
-
-    @SafeVarargs
-    public <T> T of(
-            T t,
-            @NotNull Consumer<? super T>... consumers
-    ) {
-        Validates.require(consumers, "consumers");
-
-        for (val consumer : consumers) {
-            consumer.accept(t);
-        }
-
-        return t;
-    }
-
-    @SafeVarargs
-    public <T, R> R of(
-            T t,
-            @NotNull Function<? super T, ? extends R>... functions
+    public <T, R> R apply(
+            @NotNull final T t,
+            @NotNull final Function<? super T, ? extends R>... functions
     ) {
         Validates.require(functions, "functions");
 
@@ -95,17 +56,51 @@ public class Inits {
         return result;
     }
 
-    public <T> T of(
-            @NotNull Supplier<T> supplier
+    public <T, R> R apply(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final Function<? super T, ? extends R> function
     ) {
         Validates.require(supplier, "supplier");
+        Validates.require(function, "function");
 
-        return supplier.get();
+        return function.apply(supplier.get());
     }
 
-    public <T> T of(
-            T t,
-            @NotNull Consumer<? super T> consumer
+    @SafeVarargs
+    public <T, R> R apply(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final Function<? super T, ? extends R>... functions
+    ) {
+        Validates.require(supplier, "supplier");
+        Validates.require(functions, "functions");
+
+        val t = supplier.get();
+
+        R result = null;
+        for (val function : functions) {
+            result = function.apply(t);
+        }
+
+        return result;
+    }
+
+    // ---------- BiFunctions ----------
+
+    public <T, U, R> R apply(
+            @NotNull final T t,
+            @NotNull final U u,
+            @NotNull final BiFunction<? super T, ? super U, ? extends R> function
+    ) {
+        Validates.require(function, "function");
+
+        return function.apply(t, u);
+    }
+
+    // ---------- Consumers ----------
+
+    public <T> T accept(
+            @NotNull final T t,
+            @NotNull final Consumer<? super T> consumer
     ) {
         Validates.require(consumer, "consumer");
 
@@ -113,13 +108,99 @@ public class Inits {
         return t;
     }
 
-    public <T, R> R of(
-            T t,
-            @NotNull Function<? super T, ? extends R> function
+    @SafeVarargs
+    public <T> T accept(
+            @NotNull final T t,
+            @NotNull final Consumer<? super T>... consumers
     ) {
-        Validates.require(function, "function");
+        Validates.require(consumers, "consumers");
 
-        return function.apply(t);
+        for (val consumer : consumers) {
+            consumer.accept(t);
+        }
+
+        return t;
+    }
+
+    public <T> T accept(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final Consumer<? super T> consumer
+    ) {
+        Validates.require(supplier, "supplier");
+        Validates.require(consumer, "consumer");
+
+        val t = supplier.get();
+        consumer.accept(t);
+
+        return t;
+    }
+
+    @SafeVarargs
+    public <T> T accept(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final Consumer<? super T>... consumers
+    ) {
+        Validates.require(supplier, "supplier");
+        Validates.require(consumers, "consumers");
+
+        val t = supplier.get();
+
+        for (val consumer : consumers) {
+            consumer.accept(t);
+        }
+
+        return t;
+    }
+
+    // ---------- BiConsumers ----------
+
+    public <T, U> void accept(
+            @NotNull final T t,
+            @NotNull final U u,
+            @NotNull final BiConsumer<? super T, ? super U> consumer
+    ) {
+        Validates.require(consumer, "consumer");
+
+        consumer.accept(t, u);
+    }
+
+    // ---------- Predicates ----------
+
+    public <T> boolean test(
+            @NotNull final T t,
+            @NotNull final Predicate<? super T> predicate
+    ) {
+        Validates.require(predicate, "predicate");
+
+        return predicate.test(t);
+    }
+
+    public <T> boolean test(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final Predicate<? super T> predicate
+    ) {
+        Validates.require(supplier, "supplier");
+        Validates.require(predicate, "predicate");
+
+        return predicate.test(supplier.get());
+    }
+
+    // ---------- Suppliers ----------
+
+    public <T> T get(
+            @NotNull Supplier<T> supplier
+    ) {
+        Validates.require(supplier, "supplier");
+
+        return supplier.get();
+    }
+
+    public boolean get(
+            @NotNull final BooleanSupplier supplier
+    ) {
+        Validates.require(supplier, "supplier");
+
+        return supplier.getAsBoolean();
     }
 
 }
