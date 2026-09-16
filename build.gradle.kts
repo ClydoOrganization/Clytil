@@ -8,7 +8,10 @@ group = "net.clydo.clytil"
 version = "1.0.0"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
     withSourcesJar()
     withJavadocJar()
 }
@@ -19,7 +22,7 @@ repositories {
 
 dependencies {
     listOf(
-        "org.projectlombok:lombok:1.18.42",
+        "org.projectlombok:lombok:1.18.48",
         "org.jetbrains:annotations:26.1.0"
     ).forEach {
         compileOnly(it)
@@ -32,8 +35,8 @@ tasks.javadoc {
 }
 
 tasks.wrapper {
-    gradleVersion = "9.0.0"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "9.7.1"
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 publishing {
