@@ -52,6 +52,42 @@ public class Bits {
      */
     private static final int NONE = 0;
 
+    // ---------- Flag Constants ----------
+    // Compile-time constants equivalent to flag(n); usable in switch cases and annotations.
+
+    public static final int FLAG_0 = 1 << 0;
+    public static final int FLAG_1 = 1 << 1;
+    public static final int FLAG_2 = 1 << 2;
+    public static final int FLAG_3 = 1 << 3;
+    public static final int FLAG_4 = 1 << 4;
+    public static final int FLAG_5 = 1 << 5;
+    public static final int FLAG_6 = 1 << 6;
+    public static final int FLAG_7 = 1 << 7;
+    public static final int FLAG_8 = 1 << 8;
+    public static final int FLAG_9 = 1 << 9;
+    public static final int FLAG_10 = 1 << 10;
+    public static final int FLAG_11 = 1 << 11;
+    public static final int FLAG_12 = 1 << 12;
+    public static final int FLAG_13 = 1 << 13;
+    public static final int FLAG_14 = 1 << 14;
+    public static final int FLAG_15 = 1 << 15;
+    public static final int FLAG_16 = 1 << 16;
+    public static final int FLAG_17 = 1 << 17;
+    public static final int FLAG_18 = 1 << 18;
+    public static final int FLAG_19 = 1 << 19;
+    public static final int FLAG_20 = 1 << 20;
+    public static final int FLAG_21 = 1 << 21;
+    public static final int FLAG_22 = 1 << 22;
+    public static final int FLAG_23 = 1 << 23;
+    public static final int FLAG_24 = 1 << 24;
+    public static final int FLAG_25 = 1 << 25;
+    public static final int FLAG_26 = 1 << 26;
+    public static final int FLAG_27 = 1 << 27;
+    public static final int FLAG_28 = 1 << 28;
+    public static final int FLAG_29 = 1 << 29;
+    public static final int FLAG_30 = 1 << 30;
+    public static final int FLAG_31 = 1 << 31;
+
     // ---------- Packing / Unpacking ----------
 
     /**
@@ -59,11 +95,10 @@ public class Bits {
      * Any existing bits in the target range will be replaced.
      *
      * @param target the original integer to modify
-     * @param value the value to pack (should fit within {@code length} bits)
+     * @param value  the value to pack (should fit within {@code length} bits)
      * @param offset the starting bit position (0 = least significant bit)
      * @param length the number of bits to use for the value
      * @return the resulting integer with the packed value
-     *
      * @throws IllegalArgumentException if {@code length < 0 || offset < 0 || offset + length > 32}
      */
     public static int packInt(int target, int value, int offset, int length) {
@@ -81,7 +116,6 @@ public class Bits {
      * @param offset the starting bit position to extract from (0 = least significant bit)
      * @param length the number of bits to extract
      * @return the extracted value (right-aligned)
-     *
      * @throws IllegalArgumentException if {@code length < 0 || offset < 0 || offset + length > 32}
      */
     public static int unpackInt(int packed, int offset, int length) {
@@ -105,6 +139,7 @@ public class Bits {
     /**
      * Returns a bitmask with a single bit set at the given index.
      * Equivalent to {@code 1 << index}.
+     * For a fixed index, prefer the compile-time constants {@link #FLAG_0} through {@link #FLAG_31}.
      *
      * <p><b>Example:</b>
      * <pre>{@code
@@ -125,7 +160,7 @@ public class Bits {
      * Checks if a specific flag (mask) is set in the given flags' integer.
      *
      * @param flags the flags to check
-     * @param mask the bitmask to test
+     * @param mask  the bitmask to test
      * @return {@code true} if the flag is set, {@code false} otherwise
      */
     public static boolean hasFlag(int flags, int mask) {
@@ -136,7 +171,7 @@ public class Bits {
      * Adds (sets) a flag (bitmask) to the given flags integer.
      *
      * @param flags the original flags
-     * @param mask the bitmask to add
+     * @param mask  the bitmask to add
      * @return the updated flags with the mask added
      */
     public static int addFlag(int flags, int mask) {
@@ -147,7 +182,7 @@ public class Bits {
      * Removes (clears) a flag (bitmask) from the given flags integer.
      *
      * @param flags the original flags
-     * @param mask the bitmask to remove
+     * @param mask  the bitmask to remove
      * @return the updated flags with the mask removed
      */
     public static int removeFlag(int flags, int mask) {
@@ -159,7 +194,7 @@ public class Bits {
      * If the flag is set, it will be cleared; if it is clear, it will be set.
      *
      * @param flags the original flags
-     * @param mask the bitmask to toggle
+     * @param mask  the bitmask to toggle
      * @return the updated flags with the mask toggled
      */
     public static int toggleFlag(int flags, int mask) {
