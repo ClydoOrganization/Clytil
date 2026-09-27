@@ -973,4 +973,32 @@ public class FastMaths {
         return abs(a - b) <= epsilon;
     }
 
+    /**
+     * Checks whether a float is within {@code epsilon} of zero.
+     *
+     * @param value   the value to check
+     * @param epsilon maximum allowed absolute value
+     * @return {@code true} if {@code |value| <= epsilon}
+     */
+    public boolean approxZero(
+            final float value,
+            final float epsilon
+    ) {
+        return abs(value) <= epsilon;
+    }
+
+    /**
+     * Checks whether a double is within {@code epsilon} of zero.
+     *
+     * @param value   the value to check
+     * @param epsilon maximum allowed absolute value
+     * @return {@code true} if {@code |value| <= epsilon}
+     */
+    public boolean approxZero(
+            final double value,
+            final double epsilon
+    ) {
+        return abs(value) <= epsilon;
+    }
+
 }
