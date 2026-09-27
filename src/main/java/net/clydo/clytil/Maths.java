@@ -24,7 +24,7 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 
 @UtilityClass
-public class FastMaths {
+public class Maths {
 
     /**
      * Fast clamp for int values.
@@ -613,6 +613,101 @@ public class FastMaths {
         return (int) clamp(value, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
+    // ---------- Stepping ----------
+
+    private final int SNAP_PRECISION = 1000;
+
+    /**
+     * Snaps a value to the closest multiple of {@code step}, then scales it
+     * by {@code precision} and rounds, which removes floating point drift.
+     *
+     * @param value     the value to snap
+     * @param step      the step size, must not be zero
+     * @param precision positive scale factor used for rounding, e.g. {@code 1000}
+     * @return the snapped value
+     */
+    public double snapToStepAccurate(
+            final double value,
+            final double step,
+            final int precision
+    ) {
+        val snapped = (double) Math.round(value / step) * step;
+        if (precision > 0) {
+            return (double) Math.round(snapped * precision) / precision;
+        }
+        return snapped;
+    }
+
+    /**
+     * Snaps a float to the closest multiple of {@code step}
+     * with {@link #SNAP_PRECISION} precision.
+     *
+     * @param value the value to snap
+     * @param step  the step size, must not be zero
+     * @return the snapped value
+     */
+    public float snapToStep(
+            final float value,
+            final float step
+    ) {
+        return (float) snapToStepAccurate(value, step, SNAP_PRECISION);
+    }
+
+    /**
+     * Snaps a float to the closest multiple of {@code step} and clamps it.
+     *
+     * @param value the value to snap
+     * @param min   minimum allowed value
+     * @param max   maximum allowed value
+     * @param step  the step size, must not be zero
+     * @return the snapped value clamped to [min, max]
+     */
+    public float snapToStepClamp(
+            final float value,
+            final float min,
+            final float max,
+            final float step
+    ) {
+        return clamp(snapToStep(value, step), min, max);
+    }
+
+    /**
+     * Normalizes a stepped value to {@code 0..1} relative to {@code [min, max]}.
+     *
+     * @param value the value to normalize
+     * @param min   range start
+     * @param max   range end
+     * @param step  the step size, must not be zero
+     * @return normalized value in {@code [0, 1]}
+     */
+    public float normalizeValue(
+            final float value,
+            final float min,
+            final float max,
+            final float step
+    ) {
+        return clamp((snapToStepClamp(value, min, max, step) - min) / (max - min), 0.0F, 1.0F);
+    }
+
+    /**
+     * Inverse of {@link #normalizeValue(float, float, float, float)}:
+     * maps a {@code 0..1} factor back to a stepped value in {@code [min, max]}.
+     *
+     * @param value the normalized value
+     * @param min   range start
+     * @param max   range end
+     * @param step  the step size, must not be zero
+     * @return stepped value clamped to [min, max]
+     */
+    public float denormalizeValue(
+            final float value,
+            final float min,
+            final float max,
+            final float step
+    ) {
+        return snapToStepClamp(min + (max - min) * clamp(value, 0.0F, 1.0F), min, max, step);
+    }
+
     // ---------- Interpolation ----------
 
     /**
@@ -645,6 +740,40 @@ public class FastMaths {
             final double delta
     ) {
         return start + delta * (end - start);
+    }
+
+    /**
+     * Linearly interpolates between two int channels, flooring the result.
+     * Suitable for 0..255 color channel interpolation.
+     *
+     * @param start value at {@code delta == 0}
+     * @param end   value at {@code delta == 1}
+     * @param delta interpolation factor, not clamped
+     * @return interpolated value
+     */
+    public int lerp(
+            final int start,
+            final int end,
+            final float delta
+    ) {
+        return start + floor(delta * (float) (end - start));
+    }
+
+    /**
+     * Linearly interpolates between two int channels, flooring the result.
+     * Suitable for 0..255 color channel interpolation.
+     *
+     * @param start value at {@code delta == 0}
+     * @param end   value at {@code delta == 1}
+     * @param delta interpolation factor, not clamped
+     * @return interpolated value
+     */
+    public int lerp(
+            final int start,
+            final int end,
+            final double delta
+    ) {
+        return start + floor(delta * (double) (end - start));
     }
 
     /**
@@ -913,6 +1042,25 @@ public class FastMaths {
             final long value
     ) {
         return value <= 1L ? 1L : (1L << (Long.SIZE - Long.numberOfLeadingZeros(value - 1L)));
+    }
+
+    /**
+     * Returns the power of two closest to {@code value}.
+     * Ties round down.
+     *
+     * @param value the value, must be positive
+     * @return the nearest power of two, or 1 if {@code value <= 1}
+     */
+    public int nearestPowerOfTwo(
+            final int value
+    ) {
+        if (value <= 1) {
+            return 1;
+        }
+
+        val next = ceilPowerOfTwo(value);
+        val previous = next >> 1;
+        return (value - previous) < (next - value) ? previous : next;
     }
 
     /**

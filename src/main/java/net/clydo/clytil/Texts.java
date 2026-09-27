@@ -37,7 +37,7 @@ public class Texts {
             return Substring.EMPTY;
         }
 
-        var position = FastMaths.clamp(fromIndex, 0, text.length() - 1);
+        var position = Maths.clamp(fromIndex, 0, text.length() - 1);
 
         while (position < text.length() && !Character.isWhitespace(text.charAt(position))) {
             position++;
@@ -62,7 +62,7 @@ public class Texts {
             return Substring.EMPTY;
         }
 
-        var position = FastMaths.clamp(fromIndex, 0, text.length() - 1);
+        var position = Maths.clamp(fromIndex, 0, text.length() - 1);
 
         if (skipOverSpaces) {
             while (position > 0 && Character.isWhitespace(text.charAt(position - 1))) {

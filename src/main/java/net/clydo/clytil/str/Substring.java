@@ -23,7 +23,7 @@ package net.clydo.clytil.str;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import lombok.val;
-import net.clydo.clytil.FastMaths;
+import net.clydo.clytil.Maths;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -83,13 +83,13 @@ public class Substring {
     public int beginIndex(
             @NotNull final Substring range
     ) {
-        return FastMaths.clamp(this.beginIndex(), range.beginIndex(), range.endIndex());
+        return Maths.clamp(this.beginIndex(), range.beginIndex(), range.endIndex());
     }
 
     public int endIndex(
             @NotNull final Substring range
     ) {
-        return FastMaths.clamp(this.endIndex(), range.beginIndex(), range.endIndex());
+        return Maths.clamp(this.endIndex(), range.beginIndex(), range.endIndex());
     }
 
     public int length() {
