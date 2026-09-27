@@ -26,8 +26,12 @@ import net.clydo.clytil.iface.CharPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HexFormat;
+
 @UtilityClass
 public class Strings {
+
+    private final HexFormat HEX = HexFormat.of();
 
     /**
      * Compares two CharSequence objects for equality.
@@ -139,6 +143,82 @@ public class Strings {
             final int maxLength
     ) {
         return Math.max(0, maxLength - seq.length());
+    }
+
+    /**
+     * Compares a region of a CharSequence with a String, without allocating.
+     *
+     * @param region the region to compare against
+     * @param text   the text holding the region
+     * @param start  index of the first character of the region (inclusive)
+     * @param end    index past the last character of the region (exclusive)
+     * @return {@code true} if the region equals {@code region}
+     */
+    public boolean regionEquals(
+            @NotNull final String region,
+            @NotNull final CharSequence text,
+            final int start,
+            final int end
+    ) {
+        if (region.length() != end - start) {
+            return false;
+        }
+        if (start < 0 || end > text.length() || start > end) {
+            return false;
+        }
+
+        for (int i = 0; i < region.length(); i++) {
+            if (region.charAt(i) != text.charAt(start + i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Finds the first occurrence of a character within a range, without allocating.
+     *
+     * @param text the text to search
+     * @param c    the character to look for
+     * @param from index to start at (inclusive)
+     * @param end  index to stop at (exclusive)
+     * @return the index of the character, or {@code -1} if not found
+     */
+    public int indexOf(
+            @NotNull final CharSequence text,
+            final char c,
+            final int from,
+            final int end
+    ) {
+        val last = Math.min(end, text.length());
+        for (int i = Math.max(from, 0); i < last; i++) {
+            if (text.charAt(i) == c) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Escapes a code point for plain-text output: {@code \n}, {@code \r},
+     * {@code \t}, {@code \'} and any other ISO control character become
+     * escape sequences; everything else is returned as-is.
+     *
+     * @param codePoint the code point to escape
+     * @return the escaped representation
+     */
+    public String escapeControl(
+            final int codePoint
+    ) {
+        return switch (codePoint) {
+            case '\n' -> "\\n";
+            case '\r' -> "\\r";
+            case '\t' -> "\\t";
+            case '\'' -> "\\'";
+            default -> Character.isISOControl(codePoint)
+                    ? "\\u" + HEX.toHexDigits((char) codePoint)
+                    : Character.toString(codePoint);
+        };
     }
 
 }
