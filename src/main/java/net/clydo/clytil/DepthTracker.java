@@ -55,6 +55,19 @@ public final class DepthTracker {
     }
 
     /**
+     * Asserts that all entered levels have been closed.
+     *
+     * @throws IllegalStateException if one or more levels remain open
+     */
+    public void assertEmpty() {
+        if (this.depth != 0) {
+            throw new IllegalStateException(
+                    this.name + ": " + this.depth + " unclosed scope(s)"
+            );
+        }
+    }
+
+    /**
      * @return {@code true} if no level is entered
      */
     public boolean isEmpty() {
