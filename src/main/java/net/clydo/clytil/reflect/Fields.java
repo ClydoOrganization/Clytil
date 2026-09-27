@@ -21,11 +21,14 @@
 package net.clydo.clytil.reflect;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 @UtilityClass
@@ -118,6 +121,42 @@ public class Fields {
                     ), e
             );
         }
+    }
+
+    /**
+     * Collects the values of every static field of {@code clazz}
+     * that is assignable to {@code type}.
+     *
+     * @param clazz the class to scan, superclasses are not included
+     * @param type  the wanted value type
+     * @param <V>   the wanted value type
+     * @return the matching field values, in declaration order
+     */
+    public <V> @NotNull List<V> valuesOfType(
+            @NotNull final Class<?> clazz,
+            @NotNull final Class<V> type
+    ) {
+        Validates.require(clazz, "clazz");
+        Validates.require(type, "type");
+
+        val values = new ArrayList<V>();
+        for (val field : clazz.getDeclaredFields()) {
+            if (!Modifier.isStatic(field.getModifiers()) || !type.isAssignableFrom(field.getType())) {
+                continue;
+            }
+
+            try {
+                field.setAccessible(true);
+            } catch (RuntimeException ignored) {
+                continue;
+            }
+
+            val value = Fields.get(field, null);
+            if (type.isInstance(value)) {
+                values.add(type.cast(value));
+            }
+        }
+        return values;
     }
 
 }

@@ -109,4 +109,24 @@ public class Array<T> {
         return Array.nul(0);
     }
 
+    /**
+     * Checks whether an array contains an element.
+     *
+     * @param array   the array to search
+     * @param element the element to look for
+     * @param <T>     element type
+     * @return {@code true} if the array contains {@code element}
+     */
+    public static <T> boolean contains(
+            final T @NotNull [] array,
+            final T element
+    ) {
+        for (val item : array) {
+            if (Objects.equals(item, element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
