@@ -64,6 +64,14 @@ public interface Curve<R extends Curve<R>> {
 
     @NotNull
     default R rounded(
+            final float radius,
+            final boolean rounded
+    ) {
+        return this.radius(radius).rounded(rounded);
+    }
+
+    @NotNull
+    default R rounded(
             final float radius
     ) {
         return this.radius(radius).rounded(true);
