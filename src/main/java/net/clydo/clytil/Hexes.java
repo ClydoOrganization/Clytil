@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Hex string helpers: validation, formatting and parsing of
  * {@code #RRGGBB} / {@code #RRGGBBAA} (ARGB int) values.
  *
- * <p>Color math itself lives in {@link Colors}.</p>
+ * <p>Color math itself lives in {@link ARGB} and {@link ABGR}.</p>
  */
 @UtilityClass
 public class Hexes {

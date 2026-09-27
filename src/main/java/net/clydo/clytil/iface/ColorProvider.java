@@ -20,7 +20,7 @@
 
 package net.clydo.clytil.iface;
 
-import net.clydo.clytil.Colors;
+import net.clydo.clytil.ARGB;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
@@ -51,10 +51,10 @@ public interface ColorProvider<R extends ColorProvider<R>> {
             final int color
     ) {
         return color(
-                Colors.ARGB32.red(color),
-                Colors.ARGB32.green(color),
-                Colors.ARGB32.blue(color),
-                Colors.ARGB32.alpha(color)
+                ARGB.red(color),
+                ARGB.green(color),
+                ARGB.blue(color),
+                ARGB.alpha(color)
         );
     }
 
@@ -63,9 +63,9 @@ public interface ColorProvider<R extends ColorProvider<R>> {
             final int alpha
     ) {
         return color(
-                Colors.ARGB32.red(rgb),
-                Colors.ARGB32.green(rgb),
-                Colors.ARGB32.blue(rgb),
+                ARGB.red(rgb),
+                ARGB.green(rgb),
+                ARGB.blue(rgb),
                 alpha
         );
     }
@@ -75,7 +75,7 @@ public interface ColorProvider<R extends ColorProvider<R>> {
             final int green,
             final int blue
     ) {
-        return color(red, green, blue, Colors.MAX_CHANNEL);
+        return color(red, green, blue, ARGB.MAX_CHANNEL);
     }
 
 }
