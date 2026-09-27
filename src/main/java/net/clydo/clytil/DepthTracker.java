@@ -68,6 +68,23 @@ public final class DepthTracker {
     }
 
     /**
+     * Asserts that the current depth matches the expected depth.
+     *
+     * @param expected the expected depth
+     * @throws IllegalStateException if the current depth differs
+     */
+    public void assertDepth(
+            final int expected
+    ) {
+        if (this.depth != expected) {
+            throw new IllegalStateException(
+                    this.name + ": expected depth " + expected
+                            + ", but was " + this.depth
+            );
+        }
+    }
+
+    /**
      * @return {@code true} if no level is entered
      */
     public boolean isEmpty() {
