@@ -405,6 +405,10 @@ public class ARGB {
         private final float LUMA_GREEN = 0.587f;
         private final float LUMA_BLUE = 0.114f;
         private final float LIGHT_LUMA_THRESHOLD = 128.0f;
+        // RGB channels with the low bits cleared so shifting right cannot bleed into the next channel
+        private final int HALVE_RGB_MASK = 0x00FEFEFE;
+        private final int QUARTER_RGB_MASK = 0x00FCFCFC;
+        private final int EIGHTH_RGB_MASK = 0x00F8F8F8;
 
         public int darker(
                 final int argb
@@ -484,6 +488,24 @@ public class ARGB {
                     scaleChannelFixed(blue(argb), scale),
                     alpha(argb)
             );
+        }
+
+        public int halveRgb(
+                final int argb
+        ) {
+            return (argb & HALVE_RGB_MASK) >> 1 | argb & ALPHA_MASK;
+        }
+
+        public int quarterRgb(
+                final int argb
+        ) {
+            return (argb & QUARTER_RGB_MASK) >> 2 | argb & ALPHA_MASK;
+        }
+
+        public int eighthRgb(
+                final int argb
+        ) {
+            return (argb & EIGHTH_RGB_MASK) >> 3 | argb & ALPHA_MASK;
         }
 
         public float luma(
