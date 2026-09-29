@@ -36,11 +36,11 @@ public class ARGB {
     public final int BLUE_MASK = 0x000000FF;
     public final int RGB_MASK = 0x00FFFFFF;
 
-    private final int CHANNEL_MASK = 0xFF;
-    private final int ALPHA_SHIFT = 24;
-    private final int RED_SHIFT = 16;
-    private final int GREEN_SHIFT = 8;
-    private final int ALPHA_GREEN_MASK = ALPHA_MASK | GREEN_MASK;
+    public final int CHANNEL_MASK = 0xFF;
+    public final int ALPHA_SHIFT = 24;
+    public final int RED_SHIFT = 16;
+    public final int GREEN_SHIFT = 8;
+    public final int ALPHA_GREEN_MASK = ALPHA_MASK | GREEN_MASK;
 
     public int alpha(
             final int argb
@@ -400,15 +400,15 @@ public class ARGB {
     @UtilityClass
     public class Adjustments {
 
-        private final float DEFAULT_SHADE_FACTOR = 0.7f;
-        private final float LUMA_RED = 0.299f;
-        private final float LUMA_GREEN = 0.587f;
-        private final float LUMA_BLUE = 0.114f;
-        private final float LIGHT_LUMA_THRESHOLD = 128.0f;
+        public final float DEFAULT_SHADE_FACTOR = 0.7f;
+        public final float LUMA_RED = 0.299f;
+        public final float LUMA_GREEN = 0.587f;
+        public final float LUMA_BLUE = 0.114f;
+        public final float LIGHT_LUMA_THRESHOLD = 128.0f;
         // RGB channels with the low bits cleared so shifting right cannot bleed into the next channel
-        private final int HALVE_RGB_MASK = 0x00FEFEFE;
-        private final int QUARTER_RGB_MASK = 0x00FCFCFC;
-        private final int EIGHTH_RGB_MASK = 0x00F8F8F8;
+        public final int HALVE_RGB_MASK = 0x00FEFEFE;
+        public final int QUARTER_RGB_MASK = 0x00FCFCFC;
+        public final int EIGHTH_RGB_MASK = 0x00F8F8F8;
 
         public int darker(
                 final int argb
@@ -548,11 +548,11 @@ public class ARGB {
     @UtilityClass
     public class Hsb {
 
-        private final float SECTORS = 6.0f;
-        private final float GREEN_SECTOR = 2.0f;
-        private final float BLUE_SECTOR = 4.0f;
-        private final float KEEP = -1.0f;
-        private final int COMPONENTS = 3;
+        public final float SECTORS = 6.0f;
+        public final float GREEN_SECTOR = 2.0f;
+        public final float BLUE_SECTOR = 4.0f;
+        public final float KEEP = -1.0f;
+        public final int COMPONENTS = 3;
 
         public int toArgb(
                 final float hue,
@@ -715,15 +715,15 @@ public class ARGB {
     @UtilityClass
     public class LinearRgb {
 
-        private final int LINEAR_DEPTH = 1024;
-        private final int MAX_LINEAR = LINEAR_DEPTH - 1;
-        private final float MAX_LINEAR_F = MAX_LINEAR;
-        private final float DECODE_THRESHOLD = 0.04045f;
-        private final float ENCODE_THRESHOLD = 0.0031308f;
-        private final float LINEAR_SLOPE = 12.92f;
-        private final double OFFSET = 0.055;
-        private final double SCALE = 1.055;
-        private final double GAMMA = 2.4;
+        public final int LINEAR_DEPTH = 1024;
+        public final int MAX_LINEAR = LINEAR_DEPTH - 1;
+        public final float MAX_LINEAR_F = MAX_LINEAR;
+        public final float DECODE_THRESHOLD = 0.04045f;
+        public final float ENCODE_THRESHOLD = 0.0031308f;
+        public final float LINEAR_SLOPE = 12.92f;
+        public final double OFFSET = 0.055;
+        public final double SCALE = 1.055;
+        public final double GAMMA = 2.4;
 
         private final short[] SRGB_TO_LINEAR = createSrgbToLinear();
         private final byte[] LINEAR_TO_SRGB = createLinearToSrgb();
