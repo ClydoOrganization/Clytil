@@ -4,9 +4,6 @@ plugins {
     id("maven-publish")
 }
 
-group = "net.clydo.clytil"
-version = "1.0.0"
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
