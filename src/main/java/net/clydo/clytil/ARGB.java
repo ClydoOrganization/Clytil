@@ -30,15 +30,16 @@ public class ARGB {
     public final int MAX_CHANNEL = 255;
     public final float MAX_CHANNEL_F = 255.0f;
 
+    public final int ALPHA_MASK = 0xFF000000;
+    public final int RED_MASK = 0x00FF0000;
+    public final int GREEN_MASK = 0x0000FF00;
+    public final int BLUE_MASK = 0x000000FF;
+    public final int RGB_MASK = 0x00FFFFFF;
+
     private final int CHANNEL_MASK = 0xFF;
     private final int ALPHA_SHIFT = 24;
     private final int RED_SHIFT = 16;
     private final int GREEN_SHIFT = 8;
-    private final int ALPHA_MASK = 0xFF000000;
-    private final int RED_MASK = 0x00FF0000;
-    private final int GREEN_MASK = 0x0000FF00;
-    private final int BLUE_MASK = 0x000000FF;
-    private final int RGB_MASK = 0x00FFFFFF;
     private final int ALPHA_GREEN_MASK = ALPHA_MASK | GREEN_MASK;
 
     public int alpha(
