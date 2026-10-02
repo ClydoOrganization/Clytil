@@ -13,11 +13,11 @@ public interface CloseableScope extends AutoCloseable {
     @Override
     void close();
 
-    default boolean isEmpty() {
+    default boolean closesNothing() {
         return this == EMPTY;
     }
 
-    default void run(
+    default void runAndClose(
             @NotNull final Runnable body
     ) {
         try (this) {
@@ -25,7 +25,7 @@ public interface CloseableScope extends AutoCloseable {
         }
     }
 
-    default <T> T supply(
+    default <T> T supplyAndClose(
             @NotNull final Supplier<T> body
     ) {
         try (this) {
@@ -33,27 +33,27 @@ public interface CloseableScope extends AutoCloseable {
         }
     }
 
-    default @NotNull CloseableScope then(
+    default @NotNull CloseableScope closeThen(
             @NotNull final CloseableScope next
     ) {
-        if (next.isEmpty()) {
+        if (next.closesNothing()) {
             return this;
         }
-        if (this.isEmpty()) {
+        if (this.closesNothing()) {
             return next;
         }
 
         return () -> CloseableScope.closeBoth(this, next);
     }
 
-    default @NotNull CloseableScope after(
+    default @NotNull CloseableScope closeAfter(
             @NotNull final CloseableScope first
     ) {
-        return first.then(this);
+        return first.closeThen(this);
     }
 
-    default @NotNull CloseableScope once() {
-        if (this.isEmpty()) {
+    default @NotNull CloseableScope closeOnce() {
+        if (this.closesNothing()) {
             return this;
         }
 
@@ -71,7 +71,7 @@ public interface CloseableScope extends AutoCloseable {
         };
     }
 
-    static @NotNull CloseableScope all(
+    static @NotNull CloseableScope closeAll(
             @NotNull final CloseableScope @NotNull ... scopes
     ) {
         return switch (scopes.length) {
