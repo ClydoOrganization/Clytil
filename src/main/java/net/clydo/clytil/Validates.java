@@ -21,6 +21,7 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +58,17 @@ public class Validates {
     ) {
         if (value == null) {
             throw new NullPointerException(message);
+        }
+        return value;
+    }
+
+    @Contract("null, _ -> fail; !null, _ -> param1")
+    public <T> @NotNull T requireState(
+            @Nullable final T value,
+            @NotNull final String message
+    ) {
+        if (value == null) {
+            throw new IllegalStateException(message);
         }
         return value;
     }

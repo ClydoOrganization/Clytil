@@ -24,6 +24,7 @@ lombok {
 
 dependencies {
     compileOnly("org.jetbrains:annotations:26.1.0")
+    compileOnly("com.google.code.gson:gson:2.14.0")
 }
 
 tasks.javadoc {

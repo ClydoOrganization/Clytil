@@ -23,6 +23,7 @@ package net.clydo.clytil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import net.clydo.clytil.iface.CharPredicate;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +33,15 @@ import java.util.HexFormat;
 public class Strings {
 
     private final HexFormat HEX = HexFormat.of();
+
+    @Contract(value = "null -> null", pure = true)
+    public @Nullable String nullIfEmpty(
+            @Nullable final String text
+    ) {
+        return text == null || text.isEmpty()
+                ? null
+                : text;
+    }
 
     /**
      * Compares two CharSequence objects for equality.

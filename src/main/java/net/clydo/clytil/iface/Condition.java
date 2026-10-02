@@ -104,4 +104,30 @@ public interface Condition {
         return () -> value;
     }
 
+    @Contract("null -> fail")
+    static boolean testAll(
+            @NotNull final Iterable<? extends Condition> conditions
+    ) {
+        for (final Condition condition : conditions) {
+            if (!condition.test()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Contract("null -> fail")
+    static boolean testAny(
+            @NotNull final Iterable<? extends Condition> conditions
+    ) {
+        for (final Condition condition : conditions) {
+            if (condition.test()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

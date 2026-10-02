@@ -23,6 +23,7 @@ package net.clydo.clytil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import net.clydo.clytil.option.Option;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +50,13 @@ public class Enums {
         } catch (Throwable t) {
             return Option.none();
         }
+    }
+
+    @Contract(pure = true)
+    public <T extends Enum<T>> @NotNull List<T> constants(
+            @NotNull final Class<T> clazz
+    ) {
+        return List.of(Validates.require(clazz, "clazz").getEnumConstants());
     }
 
     /**
