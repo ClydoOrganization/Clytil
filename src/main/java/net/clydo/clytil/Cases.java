@@ -25,8 +25,6 @@ import lombok.val;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.charset.StandardCharsets;
-
 import static net.clydo.clytil.Cases.Spec.*;
 
 /**
@@ -34,11 +32,14 @@ import static net.clydo.clytil.Cases.Spec.*;
  * <p>
  * Provides methods to check if a given string conforms to a specific case, to require that it does,
  * and to convert an arbitrary string into a specific case. All operations work in a single pass
- * over ASCII characters without regex.
+ * without regex.
  * <p>
- * Conversion splits the input into words on any non-alphanumeric character and on camel-case
+ * Letter case only applies to ASCII letters. Every non-ASCII character (e.g., Persian {@code "نام"})
+ * has no case, so it is allowed wherever a letter is and conversion keeps it unchanged.
+ * <p>
+ * Conversion splits the input into words on any ASCII non-alphanumeric character and on camel-case
  * boundaries ({@code "myXMLParser"} becomes {@code my}, {@code XML}, {@code Parser}), then joins
- * them in the target style. Digits stay attached to the word they follow, even across a separator
+ * them in the target style. ASCII digits stay attached to the word they follow, even across a separator
  * ({@code "name 2"} becomes {@code name2}).
  */
 @RequiredArgsConstructor
@@ -47,48 +48,48 @@ public enum Cases {
     /**
      * Lowercase words separated by underscores, e.g., "my_variable_name".
      */
-    SNAKE('_', IS_LOWER, IS_LOWER | IS_DIGIT, TO_LOWER, TO_LOWER, false),
+    SNAKE('_', IS_LOWER | IS_NON_ASCII, IS_LOWER | IS_DIGIT | IS_NON_ASCII, TO_LOWER, TO_LOWER, false),
 
     /**
      * Uppercase words separated by underscores, e.g., "MY_VARIABLE_NAME".
      */
-    SCREAMING_SNAKE('_', IS_UPPER, IS_UPPER | IS_DIGIT, TO_UPPER, TO_UPPER, false),
+    SCREAMING_SNAKE('_', IS_UPPER | IS_NON_ASCII, IS_UPPER | IS_DIGIT | IS_NON_ASCII, TO_UPPER, TO_UPPER, false),
 
     /**
      * Lowercase words separated by hyphens, e.g., "my-variable-name".
      */
-    KEBAB('-', IS_LOWER, IS_LOWER | IS_DIGIT, TO_LOWER, TO_LOWER, false),
+    KEBAB('-', IS_LOWER | IS_NON_ASCII, IS_LOWER | IS_DIGIT | IS_NON_ASCII, TO_LOWER, TO_LOWER, false),
 
     /**
      * camelCase: first word lowercase, subsequent words capitalized, e.g., "myVariableName".
      */
-    CAMEL(NO_SEPARATOR, IS_LOWER, IS_ALNUM, TO_LOWER, TO_CAPITAL, false),
+    CAMEL(NO_SEPARATOR, IS_LOWER | IS_NON_ASCII, IS_ANY, TO_LOWER, TO_CAPITAL, false),
 
     /**
      * PascalCase: all words capitalized, e.g., "MyVariableName".
      */
-    PASCAL(NO_SEPARATOR, IS_UPPER, IS_ALNUM, TO_CAPITAL, TO_CAPITAL, false),
+    PASCAL(NO_SEPARATOR, IS_UPPER | IS_NON_ASCII, IS_ANY, TO_CAPITAL, TO_CAPITAL, false),
 
     /**
      * All lowercase letters, e.g., "variable".
      * <p>
-     * Conversion drops every non-letter character.
+     * Conversion drops every ASCII non-letter character.
      */
-    LOWER(NO_SEPARATOR, IS_LOWER, IS_LOWER, TO_LOWER, TO_LOWER, true),
+    LOWER(NO_SEPARATOR, IS_LOWER | IS_NON_ASCII, IS_LOWER | IS_NON_ASCII, TO_LOWER, TO_LOWER, true),
 
     /**
      * All uppercase letters, e.g., "CONSTANT".
      * <p>
-     * Conversion drops every non-letter character.
+     * Conversion drops every ASCII non-letter character.
      */
-    UPPER(NO_SEPARATOR, IS_UPPER, IS_UPPER, TO_UPPER, TO_UPPER, true),
+    UPPER(NO_SEPARATOR, IS_UPPER | IS_NON_ASCII, IS_UPPER | IS_NON_ASCII, TO_UPPER, TO_UPPER, true),
 
     /**
      * Alphanumeric string with letters and/or digits, e.g., "Var123".
      * <p>
-     * Conversion drops every non-alphanumeric character and keeps the original letter case.
+     * Conversion drops every ASCII non-alphanumeric character and keeps the original letter case.
      */
-    ALPHANUMERIC(NO_SEPARATOR, IS_ALNUM, IS_ALNUM, KEEP, KEEP, false);
+    ALPHANUMERIC(NO_SEPARATOR, IS_ANY, IS_ANY, KEEP, KEEP, false);
 
     /**
      * The character between words, or {@link Spec#NO_SEPARATOR}.
@@ -116,7 +117,7 @@ public enum Cases {
     private final int restStyle;
 
     /**
-     * Whether conversion drops digits.
+     * Whether conversion drops ASCII digits.
      */
     private final boolean lettersOnly;
 
@@ -183,8 +184,8 @@ public enum Cases {
      * <p>
      * Returns the given instance itself when conversion would not change it.
      * <p>
-     * Conversion is best-effort: input starting with a digit (e.g., "2fast"), or with
-     * no letters or digits at all, may produce a result that does not {@link #matches(String) match}.
+     * Conversion is best-effort: input starting with an ASCII digit (e.g., "2fast"), or with
+     * no letters, digits or non-ASCII characters at all, may produce a result that does not {@link #matches(String) match}.
      *
      * @param str the string to convert
      * @return the string converted to this case type
@@ -202,9 +203,9 @@ public enum Cases {
         val sep = this.separator;
         val separated = sep != NO_SEPARATOR;
         val dropDigits = this.lettersOnly;
-        // output is pure ASCII, so a byte[] halves the buffer and becomes a compact string with a plain copy;
+        // case mapping is ASCII-only and never changes the character count, so output only grows by separators;
         // every separator follows at least one word character, so length * 1.5 always fits
-        val out = new byte[separated ? length + (length >> 1) + 1 : length];
+        val out = new char[separated ? length + (length >> 1) + 1 : length];
         int size = 0;
         // whether out[0, size) equals str[0, size); with size == length at the end, nothing changed
         boolean same = true;
@@ -230,7 +231,7 @@ public enum Cases {
             // a word starting with a digit joins the previous word, since no case lets a word start with one
             if (separated && !first && !startsWithDigit) {
                 same &= size < length && str.charAt(size) == sep;
-                out[size++] = (byte) sep;
+                out[size++] = sep;
             }
             val style = first ? this.firstStyle : this.restStyle;
             for (int k = start; k < i; k++) {
@@ -245,14 +246,14 @@ public enum Cases {
                     c = AsciiChars.toUpperCase(c);
                 }
                 same &= size < length && str.charAt(size) == c;
-                out[size++] = (byte) c;
+                out[size++] = c;
             }
             first = false;
         }
         if (same && size == length) {
             return str;
         }
-        return new String(out, 0, size, StandardCharsets.ISO_8859_1);
+        return new String(out, 0, size);
     }
 
     /**
@@ -268,6 +269,8 @@ public enum Cases {
         static final int IS_UPPER = AsciiChars.CLASS_UPPER;
         static final int IS_DIGIT = AsciiChars.CLASS_DIGIT;
         static final int IS_ALNUM = AsciiChars.CLASS_ALPHANUMERIC;
+        static final int IS_NON_ASCII = AsciiChars.CLASS_NON_ASCII;
+        static final int IS_ANY = AsciiChars.CLASS_ANY;
 
         static final int KEEP = 0;
         static final int TO_LOWER = 1;

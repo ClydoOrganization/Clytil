@@ -28,7 +28,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Fast, locale-independent checks and conversions for ASCII characters.
  * <p>
- * Every method treats characters outside the ASCII range as neither letters nor digits.
+ * Every method treats characters outside the ASCII range as neither letters nor digits;
+ * {@link #classOf(char)} gives them {@link #CLASS_NON_ASCII}.
  */
 @UtilityClass
 public class AsciiChars {
@@ -54,6 +55,11 @@ public class AsciiChars {
     public final int CLASS_DIGIT = 4;
 
     /**
+     * The {@link #classOf(char) class} bit of every character outside the ASCII range.
+     */
+    public final int CLASS_NON_ASCII = 8;
+
+    /**
      * Every {@link #classOf(char) class} bit of a letter.
      */
     public final int CLASS_LETTER = CLASS_LOWER | CLASS_UPPER;
@@ -64,13 +70,20 @@ public class AsciiChars {
     public final int CLASS_ALPHANUMERIC = CLASS_LETTER | CLASS_DIGIT;
 
     /**
+     * Every {@link #classOf(char) class} bit, matching any character except ASCII whitespace, punctuation
+     * and control characters.
+     */
+    public final int CLASS_ANY = CLASS_ALPHANUMERIC | CLASS_NON_ASCII;
+
+    /**
      * The class of each ASCII character, so {@link #classOf(char)} costs one bounded array load.
      */
     private final byte[] CLASSES = classes();
 
     /**
      * Returns the class of the given character: {@link #CLASS_LOWER}, {@link #CLASS_UPPER},
-     * {@link #CLASS_DIGIT}, or {@code 0} if it is not an ASCII letter or digit.
+     * {@link #CLASS_DIGIT}, {@link #CLASS_NON_ASCII}, or {@code 0} for any other ASCII character,
+     * such as whitespace, punctuation or a control character.
      * <p>
      * The classes are distinct bits, so a set of them can be tested at once,
      * e.g., {@code (classOf(ch) & CLASS_ALPHANUMERIC) != 0}.
@@ -82,7 +95,7 @@ public class AsciiChars {
     public int classOf(
             final char ch
     ) {
-        return ch < COUNT ? CLASSES[ch] : 0;
+        return ch < COUNT ? CLASSES[ch] : CLASS_NON_ASCII;
     }
 
     /**
@@ -147,7 +160,7 @@ public class AsciiChars {
     public boolean isAlphanumeric(
             final char ch
     ) {
-        return classOf(ch) != 0;
+        return (classOf(ch) & CLASS_ALPHANUMERIC) != 0;
     }
 
     /**
