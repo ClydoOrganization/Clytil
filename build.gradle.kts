@@ -1,7 +1,8 @@
 plugins {
-    id("java")
-    id("java-library")
-    id("maven-publish")
+    java
+    `java-library`
+    `maven-publish`
+    id("io.freefair.lombok") version "9.7.0"
 }
 
 java {
@@ -17,14 +18,12 @@ repositories {
     mavenCentral()
 }
 
+lombok {
+    version = "1.18.48"
+}
+
 dependencies {
-    listOf(
-        "org.projectlombok:lombok:1.18.48",
-        "org.jetbrains:annotations:26.1.0"
-    ).forEach {
-        compileOnly(it)
-        annotationProcessor(it)
-    }
+    compileOnly("org.jetbrains:annotations:26.1.0")
 }
 
 tasks.javadoc {
