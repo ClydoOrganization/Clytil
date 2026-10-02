@@ -64,6 +64,10 @@ public class Types {
     );
 
     public Class<?> getValueType(@NotNull final Member member) {
+        return getValueType(member, false);
+    }
+
+    public Class<?> getValueType(@NotNull final Member member, final boolean allowVoid) {
         Validates.require(member, "member");
 
         if (member instanceof Field field) {
@@ -72,7 +76,7 @@ public class Types {
             val parameterCount = method.getParameterCount();
             if (parameterCount == 0) {
                 val returnType = method.getReturnType();
-                if (returnType != void.class && returnType != Void.class) {
+                if (allowVoid || (returnType != void.class && returnType != Void.class)) {
                     return returnType;
                 }
             } else if (parameterCount == 1) {
@@ -91,6 +95,10 @@ public class Types {
     }
 
     public Type getGenericValueType(@NotNull final Member member) {
+        return getGenericValueType(member, false);
+    }
+
+    public Type getGenericValueType(@NotNull final Member member, final boolean allowVoid) {
         Validates.require(member, "member");
 
         if (member instanceof Field field) {
@@ -99,7 +107,7 @@ public class Types {
             val parameterCount = method.getParameterCount();
             if (parameterCount == 0) {
                 val returnType = method.getGenericReturnType();
-                if (returnType != void.class && returnType != Void.class) {
+                if (allowVoid || (returnType != void.class && returnType != Void.class)) {
                     return returnType;
                 }
             } else if (parameterCount == 1) {
