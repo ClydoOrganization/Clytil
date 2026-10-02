@@ -23,10 +23,12 @@ package net.clydo.clytil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Stream;
@@ -159,6 +161,30 @@ public class Types {
 
     public <T> boolean isByte(Class<T> type) {
         return Numbers.isByte(type);
+    }
+
+
+    public @Nullable Class<?> getTypeArgument(
+            @NotNull final Type type,
+            final int index
+    ) {
+        if (!(type instanceof ParameterizedType parameterized)) {
+            return null;
+        }
+
+        val arguments = parameterized.getActualTypeArguments();
+        if (index < 0 || index >= arguments.length) {
+            return null;
+        }
+
+        val argument = arguments[index];
+        if (argument instanceof Class<?> clazz) {
+            return clazz;
+        }
+
+        return argument instanceof ParameterizedType nested && nested.getRawType() instanceof Class<?> raw
+                ? raw
+                : null;
     }
 
 }

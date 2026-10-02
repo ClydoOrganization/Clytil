@@ -262,5 +262,13 @@ public class Numbers {
     public <T> boolean isByte(Class<T> type) {
         return type == Byte.class || type == byte.class;
     }
-}
 
+    public <N extends Number> @NotNull N clamp(
+            @NotNull final N value,
+            @NotNull final N min,
+            @NotNull final N max
+    ) {
+        return Numbers.cast(Maths.clamp(value.doubleValue(), min.doubleValue(), max.doubleValue()), value);
+    }
+
+}

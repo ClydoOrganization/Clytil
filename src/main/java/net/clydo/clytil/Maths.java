@@ -22,6 +22,7 @@ package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
 public class Maths {
@@ -88,6 +89,20 @@ public class Maths {
             final double max
     ) {
         return value < min ? min : (value > max ? max : value);
+    }
+
+    public <T extends Comparable<? super T>> T clamp(
+            @NotNull final T value,
+            @NotNull final T min,
+            @NotNull final T max
+    ) {
+        if (value.compareTo(min) < 0) {
+            return min;
+        }
+
+        return value.compareTo(max) > 0
+                ? max
+                : value;
     }
 
     /**

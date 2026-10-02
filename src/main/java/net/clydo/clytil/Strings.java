@@ -34,6 +34,24 @@ public class Strings {
 
     private final HexFormat HEX = HexFormat.of();
 
+    @Contract(pure = true)
+    public boolean containsIgnoreCase(
+            @Nullable final String text,
+            @Nullable final String part
+    ) {
+        if (text == null || part == null) {
+            return false;
+        }
+
+        for (var index = 0; index <= text.length() - part.length(); index++) {
+            if (text.regionMatches(true, index, part, 0, part.length())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Contract(value = "null -> null", pure = true)
     public @Nullable String nullIfEmpty(
             @Nullable final String text

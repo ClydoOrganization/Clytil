@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +52,16 @@ public class Enums {
         } catch (Throwable t) {
             return Option.none();
         }
+    }
+
+    @Contract("_, _ -> new")
+    public <T extends Enum<T>> @NotNull Set<T> unmodifiableSet(
+            @NotNull final Class<T> clazz,
+            @NotNull final Collection<? extends T> values
+    ) {
+        val set = EnumSet.noneOf(Validates.require(clazz, "clazz"));
+        set.addAll(values);
+        return Collections.unmodifiableSet(set);
     }
 
     @Contract(pure = true)

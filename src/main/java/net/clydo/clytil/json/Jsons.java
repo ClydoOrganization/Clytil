@@ -35,7 +35,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @UtilityClass
 public class Jsons {
@@ -315,6 +317,46 @@ public class Jsons {
         return object.get(member) instanceof JsonArray value
                 ? value
                 : null;
+    }
+
+    @Contract(pure = true)
+    public @Nullable List<String> optStringList(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        val array = optArray(object, member);
+        if (array == null) {
+            return null;
+        }
+
+        val list = new ArrayList<String>(array.size());
+        for (val element : array) {
+            if (element instanceof JsonPrimitive primitive && primitive.isString()) {
+                list.add(primitive.getAsString());
+            }
+        }
+
+        return list;
+    }
+
+    @Contract(pure = true)
+    public @Nullable Map<String, String> optStringMap(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        val source = optObject(object, member);
+        if (source == null) {
+            return null;
+        }
+
+        val map = new LinkedHashMap<String, String>();
+        for (val entry : source.entrySet()) {
+            if (entry.getValue() instanceof JsonPrimitive primitive && primitive.isString()) {
+                map.put(entry.getKey(), primitive.getAsString());
+            }
+        }
+
+        return map;
     }
 
     @Contract(pure = true)
