@@ -22,6 +22,7 @@ package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,116 +34,201 @@ import java.util.function.Supplier;
 public class Nulls {
 
     // === Basic Null Checks ===
-    public static boolean isNull(Object obj) {
+    @Contract(value = "null -> true; !null -> false", pure = true)
+    public static boolean isNull(
+            @Nullable final Object obj
+    ) {
         return obj == null;
     }
 
-    public static boolean isNotNull(Object obj) {
+    @Contract(value = "null -> false; !null -> true", pure = true)
+    public static boolean isNotNull(
+            @Nullable final Object obj
+    ) {
         return obj != null;
     }
 
-    public static boolean nul(Object obj) {
+    @Contract(value = "null -> true; !null -> false", pure = true)
+    public static boolean nul(
+            @Nullable final Object obj
+    ) {
         return obj == null;
     }
 
-    public static boolean non(Object obj) {
+    @Contract(value = "null -> false; !null -> true", pure = true)
+    public static boolean non(
+            @Nullable final Object obj
+    ) {
         return obj != null;
     }
 
     // === Defaulting ===
-    public static <T> T or(T value, T fallback) {
+    @Contract(value = "!null, _ -> param1; null, _ -> param2", pure = true)
+    public static <T> T or(
+            @Nullable final T value,
+            @Nullable final T fallback
+    ) {
         return value != null ? value : fallback;
     }
 
-    public static <T> T orGet(T value, Supplier<? extends T> fallbackSupplier) {
+    @Contract("!null, _ -> param1")
+    public static <T> T orGet(
+            @Nullable final T value,
+            @NotNull final Supplier<? extends T> fallbackSupplier
+    ) {
         return value != null ? value : fallbackSupplier.get();
     }
 
     // === First Non-null ===
-    public static <T> T firstNonNull(T a, T b) {
+    @Contract(value = "!null, _ -> param1; null, _ -> param2", pure = true)
+    public static <T> T firstNonNull(
+            @Nullable final T a,
+            @Nullable final T b
+    ) {
         return a == null ? b : a;
     }
 
-    public static <T> T firstNonNull(T a, T b, T c) {
+    @Contract(value = "!null, _, _ -> param1", pure = true)
+    public static <T> T firstNonNull(
+            @Nullable final T a,
+            @Nullable final T b,
+            @Nullable final T c
+    ) {
         return a == null ? (b == null ? c : b) : a;
     }
 
-    public static <T> T firstNonNull(T a, T b, T c, T d) {
+    @Contract(value = "!null, _, _, _ -> param1", pure = true)
+    public static <T> T firstNonNull(
+            @Nullable final T a,
+            @Nullable final T b,
+            @Nullable final T c,
+            @Nullable final T d
+    ) {
         return a == null ? (b == null ? (c == null ? d : c) : b) : a;
     }
 
     @SafeVarargs
-    public static <T> T firstNonNull(T... values) {
+    @Contract(pure = true)
+    public static <T> @Nullable T firstNonNull(
+            final T @NotNull ... values
+    ) {
         for (T val : values) {
             if (val != null) return val;
         }
         return null;
     }
 
-    // === ... ===
-
-    @Nullable
-    public <T, R> R map(@Nullable T t, Function<T, R> function) {
+    // === Mapping ===
+    @Contract("null, _ -> null")
+    public static <T, R> @Nullable R map(
+            @Nullable final T t,
+            @NotNull final Function<T, R> function
+    ) {
         return t == null ? null : function.apply(t);
     }
 
-    public <T, R> R mapOrDefault(@Nullable T t, Function<T, R> function, R r) {
+    @Contract("null, _, _ -> param3")
+    public static <T, R> R mapOrDefault(
+            @Nullable final T t,
+            @NotNull final Function<T, R> function,
+            @Nullable final R r
+    ) {
         return t == null ? r : function.apply(t);
     }
 
-    public <T, R> R mapOrElse(@Nullable T t, Function<T, R> function, Supplier<R> supplier) {
+    public static <T, R> R mapOrElse(
+            @Nullable final T t,
+            @NotNull final Function<T, R> function,
+            @NotNull final Supplier<R> supplier
+    ) {
         return t == null ? supplier.get() : function.apply(t);
     }
 
-    @Nullable
-    public <T> T first(@NotNull Collection<T> collection) {
+    // === Collections ===
+    public static <T> @Nullable T first(
+            @NotNull final Collection<T> collection
+    ) {
         val iterator = collection.iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    public <T> T firstOrDefault(@NotNull Collection<T> collection, T t) {
+    public static <T> T firstOrDefault(
+            @NotNull final Collection<T> collection,
+            @Nullable final T t
+    ) {
         val iterator = collection.iterator();
         return iterator.hasNext() ? iterator.next() : t;
     }
 
-    public <T> T firstOrElse(@NotNull Collection<T> collection, Supplier<T> supplier) {
+    public static <T> T firstOrElse(
+            @NotNull final Collection<T> collection,
+            @NotNull final Supplier<T> supplier
+    ) {
         val iterator = collection.iterator();
         return iterator.hasNext() ? iterator.next() : supplier.get();
     }
 
-    public <T> boolean isNullOrEmpty(@Nullable T[] ts) {
+    // === Arrays ===
+    @Contract(value = "null -> true", pure = true)
+    public static <T> boolean isNullOrEmpty(
+            final T @Nullable [] ts
+    ) {
         return ts == null || ts.length == 0;
     }
 
-    public boolean isNullOrEmpty(boolean @Nullable [] booleans) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final boolean @Nullable [] booleans
+    ) {
         return booleans == null || booleans.length == 0;
     }
 
-    public boolean isNullOrEmpty(byte @Nullable [] bytes) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final byte @Nullable [] bytes
+    ) {
         return bytes == null || bytes.length == 0;
     }
 
-    public boolean isNullOrEmpty(char @Nullable [] chars) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final char @Nullable [] chars
+    ) {
         return chars == null || chars.length == 0;
     }
 
-    public boolean isNullOrEmpty(short @Nullable [] shorts) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final short @Nullable [] shorts
+    ) {
         return shorts == null || shorts.length == 0;
     }
 
-    public boolean isNullOrEmpty(int @Nullable [] ints) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final int @Nullable [] ints
+    ) {
         return ints == null || ints.length == 0;
     }
 
-    public boolean isNullOrEmpty(long @Nullable [] longs) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final long @Nullable [] longs
+    ) {
         return longs == null || longs.length == 0;
     }
 
-    public boolean isNullOrEmpty(float @Nullable [] floats) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final float @Nullable [] floats
+    ) {
         return floats == null || floats.length == 0;
     }
 
-    public boolean isNullOrEmpty(double @Nullable [] doubles) {
+    @Contract(value = "null -> true", pure = true)
+    public static boolean isNullOrEmpty(
+            final double @Nullable [] doubles
+    ) {
         return doubles == null || doubles.length == 0;
     }
 
