@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -269,6 +270,29 @@ public class Numbers {
             @NotNull final N max
     ) {
         return Numbers.cast(Maths.clamp(value.doubleValue(), min.doubleValue(), max.doubleValue()), value);
+    }
+
+    /**
+     * Formats a size in bytes the way file lists show it, in binary units: {@code 512 B},
+     * {@code 24 KB}, {@code 2.4 MB}, {@code 1.1 GB}.
+     *
+     * @param bytes the size, not negative
+     * @return the text
+     */
+    public @NotNull String formatBytes(
+            final long bytes
+    ) {
+        Validates.requireNonNegative(bytes, "bytes");
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+        if (bytes < 1024 * 1024) {
+            return Math.round(bytes / 1024.0) + " KB";
+        }
+        if (bytes < 1024L * 1024 * 1024) {
+            return String.format(Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024));
+        }
+        return String.format(Locale.ROOT, "%.1f GB", bytes / (1024.0 * 1024 * 1024));
     }
 
 }

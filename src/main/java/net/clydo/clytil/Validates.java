@@ -136,7 +136,7 @@ public class Validates {
             final float value,
             @NotNull final String name
     ) {
-        if (value <= 0) {
+        if (!(value > 0)) {
             throw new IllegalArgumentException(String.format("%s must be positive", name));
         }
 
@@ -147,7 +147,7 @@ public class Validates {
             final float value,
             @NotNull final String name
     ) {
-        if (value < 0) {
+        if (!(value >= 0)) {
             throw new IllegalArgumentException(String.format("%s must be non-negative", name));
         }
 
@@ -158,7 +158,7 @@ public class Validates {
             final float value,
             @NotNull final String name
     ) {
-        if (value >= 0) {
+        if (!(value < 0)) {
             throw new IllegalArgumentException(String.format("%s must be negative", name));
         }
 
@@ -169,7 +169,7 @@ public class Validates {
             final float value,
             @NotNull final String name
     ) {
-        if (value > 0) {
+        if (!(value <= 0)) {
             throw new IllegalArgumentException(String.format("%s must be non-positive", name));
         }
 
@@ -182,7 +182,7 @@ public class Validates {
             final float max,
             @NotNull final String name
     ) {
-        if (value < min || value > max) {
+        if (!(value >= min && value <= max)) {
             throw new IllegalArgumentException(String.format("%s must be between %f and %f", name, min, max));
         }
 
@@ -252,7 +252,7 @@ public class Validates {
             final double value,
             @NotNull final String name
     ) {
-        if (value <= 0) {
+        if (!(value > 0)) {
             throw new IllegalArgumentException(String.format("%s must be positive", name));
         }
 
@@ -263,7 +263,7 @@ public class Validates {
             final double value,
             @NotNull final String name
     ) {
-        if (value < 0) {
+        if (!(value >= 0)) {
             throw new IllegalArgumentException(String.format("%s must be non-negative", name));
         }
 
@@ -274,7 +274,7 @@ public class Validates {
             final double value,
             @NotNull final String name
     ) {
-        if (value >= 0) {
+        if (!(value < 0)) {
             throw new IllegalArgumentException(String.format("%s must be negative", name));
         }
 
@@ -285,7 +285,7 @@ public class Validates {
             final double value,
             @NotNull final String name
     ) {
-        if (value > 0) {
+        if (!(value <= 0)) {
             throw new IllegalArgumentException(String.format("%s must be non-positive", name));
         }
 
@@ -298,7 +298,7 @@ public class Validates {
             final double max,
             @NotNull final String name
     ) {
-        if (value < min || value > max) {
+        if (!(value >= min && value <= max)) {
             throw new IllegalArgumentException(String.format("%s must be between %f and %f", name, min, max));
         }
 
@@ -307,19 +307,17 @@ public class Validates {
 
     // collections
 
-    public <C extends Collection<?>> @NotNull C require(
-            @Nullable final C collection,
-            @NotNull final String name
-    ) {
-        if (collection == null) {
-            throw new NullPointerException(String.format("'%s' must not be null", name));
-        }
-        if (collection.isEmpty()) {
-            throw new NullPointerException(String.format("'%s' must not be empty", name));
-        }
-        return collection;
-    }
-
+    /**
+     * Requires a collection to be non-null, non-empty and free of null items. For a collection
+     * that may be empty, use {@link #require(Object, String)}.
+     *
+     * @param collection the collection
+     * @param name       the name used in the exception message
+     * @param <C>        the collection type
+     * @return the collection
+     * @throws NullPointerException     if it or one of its items is null
+     * @throws IllegalArgumentException if it is empty
+     */
     public <C extends Collection<?>> @NotNull C requireFilled(
             @Nullable final C collection,
             @NotNull final String name
@@ -328,7 +326,7 @@ public class Validates {
             throw new NullPointerException(String.format("'%s' must not be null", name));
         }
         if (collection.isEmpty()) {
-            throw new NullPointerException(String.format("'%s' must not be empty", name));
+            throw new IllegalArgumentException(String.format("'%s' must not be empty", name));
         }
         if (collection.stream().anyMatch(Objects::isNull)) {
             throw new NullPointerException(String.format("'%s' items must not be null", name));

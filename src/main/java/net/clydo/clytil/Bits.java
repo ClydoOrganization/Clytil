@@ -47,14 +47,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Bits {
 
-    /**
-     * Constant representing no flags set (all bits cleared).
-     */
-    private static final int NONE = 0;
-
     // ---------- Flag Constants ----------
     // Compile-time constants equivalent to flag(n); usable in switch cases and annotations.
 
+    public static final int NONE = 0;
     public static final int FLAG_0 = 1 << 0;
     public static final int FLAG_1 = 1 << 1;
     public static final int FLAG_2 = 1 << 2;
@@ -126,15 +122,6 @@ public class Bits {
     }
 
     // ---------- Bitmask Flag Utilities ----------
-
-    /**
-     * Returns the integer value representing no flags set (all bits cleared).
-     *
-     * @return an int with no bits set (zero)
-     */
-    public static int none() {
-        return NONE;
-    }
 
     /**
      * Returns a bitmask with a single bit set at the given index.

@@ -76,4 +76,19 @@ public class FileExtensions {
         return false;
     }
 
+    /**
+     * Returns the extension of a file name: what follows its last dot, as written. A name whose
+     * only dot is its first character, such as {@code ".gitignore"}, has none.
+     *
+     * @param fileName the file name, such as {@code "photo.PNG"}
+     * @return the extension without its dot, such as {@code "PNG"}, or an empty string
+     */
+    @Contract(pure = true)
+    public @NotNull String of(
+            @NotNull final String fileName
+    ) {
+        val dot = fileName.lastIndexOf('.');
+        return dot > 0 ? fileName.substring(dot + 1) : "";
+    }
+
 }

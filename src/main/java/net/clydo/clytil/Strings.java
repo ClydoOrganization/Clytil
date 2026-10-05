@@ -27,7 +27,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.Normalizer;
 import java.util.HexFormat;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class Strings {
@@ -247,6 +249,22 @@ public class Strings {
                     ? "\\u" + HEX.toHexDigits((char) codePoint)
                     : Character.toString(codePoint);
         };
+    }
+
+    private final Pattern COMBINING_MARKS = Pattern.compile("\\p{M}+");
+
+    /**
+     * Removes accents and other combining marks, so {@code "Éclair"} becomes {@code "Eclair"}.
+     * Useful for searches that should ignore accents.
+     *
+     * @param str the text
+     * @return the text without combining marks
+     */
+    @Contract(pure = true)
+    public @NotNull String stripAccents(
+            @NotNull final String str
+    ) {
+        return COMBINING_MARKS.matcher(Normalizer.normalize(str, Normalizer.Form.NFD)).replaceAll("");
     }
 
 }
