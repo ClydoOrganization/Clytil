@@ -18,7 +18,7 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,18 +30,24 @@ import java.util.function.Function;
 /**
  * Memoizes a {@link BiFunction} through a one-argument {@link MemoizedFunction} keyed by both
  * arguments together.
+ *
+ * @param function the function being memoized
+ * @param delegate the cache, keyed by both arguments
  */
-final class SpreadMemoizedBiFunction<T, U, R> implements MemoizedBiFunction<T, U, R> {
+record SpreadMemoizedBiFunction<T, U, R>(
+        @NotNull BiFunction<? super T, ? super U, ? extends R> function,
+        @NotNull MemoizedFunction<Key<T, U>, R> delegate
+) implements MemoizedBiFunction<T, U, R> {
 
-    private final MemoizedFunction<Key<T, U>, R> delegate;
-    private final BiFunction<? super T, ? super U, ? extends R> function;
-
-    SpreadMemoizedBiFunction(
+    @Contract("_, _ -> new")
+    static <T, U, R> @NotNull SpreadMemoizedBiFunction<T, U, R> of(
             @NotNull final BiFunction<? super T, ? super U, ? extends R> function,
             @NotNull final Function<Function<Key<T, U>, R>, MemoizedFunction<Key<T, U>, R>> memoizer
     ) {
-        this.function = function;
-        this.delegate = memoizer.apply(key -> function.apply(key.first(), key.second()));
+        return new SpreadMemoizedBiFunction<>(
+                function,
+                memoizer.apply(key -> function.apply(key.first(), key.second()))
+        );
     }
 
     @Override
@@ -70,7 +76,7 @@ final class SpreadMemoizedBiFunction<T, U, R> implements MemoizedBiFunction<T, U
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Memoize.biFunction[" + this.function + ", size=" + this.size() + "]";
     }
 

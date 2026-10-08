@@ -18,7 +18,7 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,8 @@ import java.util.function.Supplier;
 
 /**
  * Computes once with double-checked locking. One volatile field holds the value: {@code null}
- * before it is computed, the {@link NullMask} sentinel for a {@code null} result.
+ * before it is computed, the {@link NullMask} sentinel for a {@code null} result. Used for
+ * non-serializable delegates; see {@link SerializableLazySupplier}.
  */
 final class LazySupplier<T> implements MemoizedSupplier<T> {
 

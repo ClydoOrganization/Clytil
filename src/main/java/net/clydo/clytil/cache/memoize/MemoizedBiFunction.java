@@ -18,25 +18,37 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 /**
- * A {@link Supplier} that computes its value once and then reuses it, created by {@link Memoize}.
+ * A {@link BiFunction} that caches its results, created by {@link Memoize}.
  *
- * @param <T> value type
+ * @param <T> first argument type
+ * @param <U> second argument type
+ * @param <R> result type
  */
-public interface MemoizedSupplier<T> extends Supplier<T> {
+public interface MemoizedBiFunction<T, U, R> extends BiFunction<T, U, R> {
 
     /**
-     * Returns whether a live value is cached, without computing one.
+     * Returns whether a live result for these arguments is cached.
      */
-    boolean isComputed();
+    boolean isCached(T first, U second);
 
     /**
-     * Drops the cached value, so the next {@link #get()} recomputes it.
+     * Drops the cached result for these arguments, so the next call recomputes it.
      */
-    void reset();
+    void invalidate(T first, U second);
+
+    /**
+     * Drops every cached result.
+     */
+    void clear();
+
+    /**
+     * Returns how many results are cached.
+     */
+    int size();
 
 }

@@ -18,7 +18,7 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -27,23 +27,22 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Like {@link LockedMemoizedFunction}, but each value carries an expiry time and is recomputed once
- * it passes. Expired entries are dropped when looked up or counted.
+ * Backed by a non-concurrent map, such as an {@link LruMap} or a {@link java.util.WeakHashMap},
+ * guarded by a lock that is never held while computing, so a slow computation does not block
+ * lookups of other arguments. Values are stored as-is, without timestamps. Under contention a
+ * result may be computed more than once; the first one stored wins.
  */
-final class ExpiringMemoizedFunction<T, R> implements MemoizedFunction<T, R> {
+final class LockedMemoizedFunction<T, R> implements MemoizedFunction<T, R> {
 
-    private final Map<Object, TimedValue> cache;
+    private final Map<Object, Object> cache;
     private final Function<? super T, ? extends R> function;
-    private final long ttlNanos;
 
-    ExpiringMemoizedFunction(
+    LockedMemoizedFunction(
             @NotNull final Function<? super T, ? extends R> function,
-            @NotNull final Map<Object, TimedValue> cache,
-            final long ttlNanos
+            @NotNull final Map<Object, Object> cache
     ) {
         this.function = function;
         this.cache = cache;
-        this.ttlNanos = ttlNanos;
     }
 
     @Override
@@ -52,26 +51,21 @@ final class ExpiringMemoizedFunction<T, R> implements MemoizedFunction<T, R> {
         synchronized (this.cache) {
             val cached = this.cache.get(key);
             if (cached != null) {
-                if (!cached.isExpired()) {
-                    return NullMask.unmask(cached.value());
-                }
-                this.cache.remove(key);
+                return NullMask.unmask(cached);
             }
         }
 
-        val computed = TimedValue.of(NullMask.mask(this.function.apply(argument)), this.ttlNanos);
+        val computed = NullMask.mask(this.function.apply(argument));
         synchronized (this.cache) {
-            this.cache.put(key, computed);
+            val previous = this.cache.putIfAbsent(key, computed);
+            return NullMask.unmask(previous != null ? previous : computed);
         }
-
-        return NullMask.unmask(computed.value());
     }
 
     @Override
     public boolean isCached(final T argument) {
         synchronized (this.cache) {
-            val cached = this.cache.get(NullMask.mask(argument));
-            return cached != null && !cached.isExpired();
+            return this.cache.containsKey(NullMask.mask(argument));
         }
     }
 
@@ -92,9 +86,12 @@ final class ExpiringMemoizedFunction<T, R> implements MemoizedFunction<T, R> {
     @Override
     public int size() {
         synchronized (this.cache) {
-            this.cache.values().removeIf(TimedValue::isExpired);
             return this.cache.size();
         }
+    }
+
+    Map<Object, Object> cache() {
+        return this.cache;
     }
 
     @Override

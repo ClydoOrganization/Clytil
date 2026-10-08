@@ -18,29 +18,25 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.function.Supplier;
 
 /**
- * A {@link LinkedHashMap} in access order that drops its least recently used entry once it holds
- * more than {@code maxSize}. Not thread-safe.
+ * A {@link Supplier} that computes its value once and then reuses it, created by {@link Memoize}.
+ *
+ * @param <T> value type
  */
-final class LruMap<K, V> extends LinkedHashMap<K, V> {
+public interface MemoizedSupplier<T> extends Supplier<T> {
 
-    private final int maxSize;
+    /**
+     * Returns whether a live value is cached, without computing one.
+     */
+    boolean isComputed();
 
-    LruMap(
-            final int maxSize
-    ) {
-        super(Math.min(16, maxSize + 1), 0.75f, true);
-        this.maxSize = maxSize;
-    }
-
-    @Override
-    protected boolean removeEldestEntry(final Map.Entry<K, V> eldest) {
-        return this.size() > this.maxSize;
-    }
+    /**
+     * Drops the cached value, so the next {@link #get()} recomputes it.
+     */
+    void reset();
 
 }

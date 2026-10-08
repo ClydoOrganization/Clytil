@@ -18,7 +18,7 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;

@@ -18,7 +18,7 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +68,10 @@ final class ExpiringMemoizedSupplier<T> implements MemoizedSupplier<T> {
     @Override
     public void reset() {
         this.value = null;
+    }
+
+    long ttlNanos() {
+        return this.ttlNanos;
     }
 
     @Override

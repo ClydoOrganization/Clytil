@@ -18,35 +18,33 @@
  * Copyright (C) 2026 ClydoNetwork
  */
 
-package net.clydo.clytil.cache;
+package net.clydo.clytil.cache.memoize;
 
-import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Swaps {@code null} for a sentinel so it can be stored where {@code null} is not allowed, such as
- * a {@link java.util.concurrent.ConcurrentHashMap}, or where {@code null} means "absent".
+ * A cached value with the {@link System#nanoTime()} at which it expires.
+ *
+ * @param value     the value, possibly a {@link NullMask} sentinel
+ * @param expiresAt when the value expires
  */
-@UtilityClass
-class NullMask {
+record TimedValue(@Nullable Object value, long expiresAt) {
 
-    private final Object NULL = new Object();
-
-    @Contract(pure = true)
-    @NotNull Object mask(
-            @Nullable final Object value
+    @Contract("_, _ -> new")
+    static @NotNull TimedValue of(
+            @Nullable final Object value,
+            final long ttlNanos
     ) {
-        return value == null ? NULL : value;
+        return new TimedValue(value, System.nanoTime() + ttlNanos);
     }
 
-    @SuppressWarnings("unchecked")
-    @Contract(pure = true)
-    <T> @Nullable T unmask(
-            @NotNull final Object value
-    ) {
-        return value == NULL ? null : (T) value;
+    /**
+     * Compares by difference, which stays correct when {@code nanoTime} wraps around.
+     */
+    boolean isExpired() {
+        return System.nanoTime() - this.expiresAt >= 0L;
     }
 
 }
