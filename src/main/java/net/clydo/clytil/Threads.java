@@ -25,15 +25,17 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
- * Thread pool helpers: named {@link ThreadFactory} creation and
- * cached/fixed pool factories.
+ * Thread pool helpers: named {@link ThreadFactory} creation, cached/fixed/work-stealing pool
+ * factories, shutdown, and thread and task naming.
  */
 @UtilityClass
 public class Threads {
@@ -56,13 +58,7 @@ public class Threads {
         return runnable -> {
             val thread = new Thread(runnable, String.format(nameFormat, counter.getAndIncrement()));
             if (handler != null) {
-                thread.setUncaughtExceptionHandler((t, e) -> {
-                    val cause = e instanceof CompletionException && e.getCause() != null
-                            ? e.getCause()
-                            : e;
-
-                    handler.uncaughtException(t, cause);
-                });
+                thread.setUncaughtExceptionHandler(unwrapping(handler));
             }
             return thread;
         };
@@ -95,6 +91,148 @@ public class Threads {
     ) {
         Validates.requirePositive(threads, "threads");
         return Executors.newFixedThreadPool(threads, threadFactory(nameFormat, handler));
+    }
+
+    /**
+     * Creates a work-stealing {@link ForkJoinPool} in FIFO (async) mode, suited to many small
+     * independent tasks.
+     *
+     * @param nameFormat thread name pattern, see {@link #threadFactory(String, Thread.UncaughtExceptionHandler)}
+     * @param threads    parallelism, must be positive
+     * @return the pool
+     */
+    public ForkJoinPool newWorkStealingPool(
+            @NotNull final String nameFormat,
+            final int threads,
+            @Nullable final Thread.UncaughtExceptionHandler handler
+    ) {
+        Validates.require(nameFormat, "nameFormat");
+        Validates.requirePositive(threads, "threads");
+
+        val counter = new AtomicInteger();
+        return new ForkJoinPool(
+                threads,
+                pool -> {
+                    val thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+                    thread.setName(String.format(nameFormat, counter.getAndIncrement()));
+                    return thread;
+                },
+                handler == null ? null : unwrapping(handler),
+                true
+        );
+    }
+
+    /**
+     * Returns a worker count for a background pool: one less than the available processors, so
+     * the calling thread keeps a core, clamped to {@code [1, max]}.
+     */
+    public int backgroundThreadCount(
+            final int max
+    ) {
+        Validates.requirePositive(max, "max");
+
+        return Maths.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, max);
+    }
+
+    /**
+     * Shuts {@code executor} down and waits up to {@code timeout} for its tasks to finish, then
+     * interrupts any still running.
+     *
+     * @return whether the executor finished within the timeout
+     */
+    public boolean shutdownAndAwait(
+            @NotNull final ExecutorService executor,
+            final long timeout,
+            @NotNull final TimeUnit unit
+    ) {
+        Validates.require(executor, "executor");
+        Validates.require(unit, "unit");
+
+        executor.shutdown();
+        try {
+            if (executor.awaitTermination(timeout, unit)) {
+                return true;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        executor.shutdownNow();
+        return false;
+    }
+
+    /**
+     * Runs {@code runnable} with the current thread renamed to {@code name}, which shows up in
+     * thread dumps and profilers, then restores the old name.
+     */
+    public void runNamed(
+            @NotNull final String name,
+            @NotNull final Runnable runnable
+    ) {
+        Validates.require(name, "name");
+        Validates.require(runnable, "runnable");
+
+        val thread = Thread.currentThread();
+        val oldName = thread.getName();
+        thread.setName(name);
+        try {
+            runnable.run();
+        } finally {
+            thread.setName(oldName);
+        }
+    }
+
+    /**
+     * Wraps {@code runnable} so its {@code toString()} returns {@code name}, which makes tasks
+     * readable in logs and executor queues.
+     */
+    public @NotNull Runnable named(
+            @NotNull final Runnable runnable,
+            @NotNull final String name
+    ) {
+        Validates.require(runnable, "runnable");
+        Validates.require(name, "name");
+
+        return new Runnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+
+            @Override
+            public String toString() {
+                return name;
+            }
+        };
+    }
+
+    /**
+     * Wraps {@code supplier} so its {@code toString()} returns {@code name}.
+     */
+    public <T> @NotNull Supplier<T> named(
+            @NotNull final Supplier<T> supplier,
+            @NotNull final String name
+    ) {
+        Validates.require(supplier, "supplier");
+        Validates.require(name, "name");
+
+        return new Supplier<>() {
+            @Override
+            public T get() {
+                return supplier.get();
+            }
+
+            @Override
+            public String toString() {
+                return name;
+            }
+        };
+    }
+
+    private Thread.UncaughtExceptionHandler unwrapping(
+            @NotNull final Thread.UncaughtExceptionHandler handler
+    ) {
+        return (thread, exception) -> handler.uncaughtException(thread, Futures.unwrap(exception));
     }
 
 }
