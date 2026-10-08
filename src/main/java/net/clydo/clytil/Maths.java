@@ -628,6 +628,24 @@ public class Maths {
         return (int) clamp(value, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
+    private final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
+    /**
+     * Returns a new capacity for a growing array or buffer: 1.5 times {@code current}, at least
+     * {@code minimum}, and no more than the largest array size most JVMs allow, without
+     * overflowing.
+     *
+     * @param current the current capacity
+     * @param minimum the capacity that is needed
+     * @return the new capacity
+     */
+    public int growCapacity(
+            final int current,
+            final int minimum
+    ) {
+        return (int) Math.max(Math.min((long) current + (current >> 1), MAX_ARRAY_SIZE), minimum);
+    }
+
     // ---------- Stepping ----------
 
     private final int SNAP_PRECISION = 1000;

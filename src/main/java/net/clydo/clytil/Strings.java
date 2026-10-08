@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
 import java.util.HexFormat;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 @UtilityClass
@@ -70,7 +71,7 @@ public class Strings {
      * @param cs2 the second CharSequence, may be null
      * @return {@code true} if both CharSequences are equal, {@code false} otherwise
      */
-    public boolean equals(final CharSequence cs1, final CharSequence cs2) {
+    public boolean equals(@Nullable final CharSequence cs1, @Nullable final CharSequence cs2) {
         // Reference equality check
         if (cs1 == cs2) {
             return true;
@@ -265,6 +266,61 @@ public class Strings {
             @NotNull final String str
     ) {
         return COMBINING_MARKS.matcher(Normalizer.normalize(str, Normalizer.Form.NFD)).replaceAll("");
+    }
+
+    /**
+     * Replaces every char that {@code allowed} rejects with {@code '_'}, such as to build a file
+     * name or identifier from user text.
+     */
+    @Contract(pure = true)
+    public @NotNull String sanitize(
+            @NotNull final String text,
+            @NotNull final CharPredicate allowed
+    ) {
+        return sanitize(text, allowed, '_');
+    }
+
+    /**
+     * Replaces every char that {@code allowed} rejects with {@code replacement}.
+     */
+    @Contract(pure = true)
+    public @NotNull String sanitize(
+            @NotNull final String text,
+            @NotNull final CharPredicate allowed,
+            final char replacement
+    ) {
+        int first = 0;
+        while (first < text.length() && allowed.test(text.charAt(first))) {
+            first++;
+        }
+
+        if (first == text.length()) {
+            return text;
+        }
+
+        val chars = text.toCharArray();
+        for (int i = first; i < chars.length; i++) {
+            if (!allowed.test(chars[i])) {
+                chars[i] = replacement;
+            }
+        }
+
+        return new String(chars);
+    }
+
+    /**
+     * Returns a consumer that passes each string to {@code consumer} with {@code prefix} in front,
+     * such as to tag log lines.
+     */
+    @Contract(pure = true)
+    public @NotNull Consumer<String> prefixed(
+            @NotNull final String prefix,
+            @NotNull final Consumer<? super String> consumer
+    ) {
+        Validates.require(prefix, "prefix");
+        Validates.require(consumer, "consumer");
+
+        return text -> consumer.accept(prefix + text);
     }
 
 }

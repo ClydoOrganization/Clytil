@@ -21,20 +21,82 @@
 package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 import net.clydo.clytil.iface.XRunnable;
 import net.clydo.clytil.iface.XSupplier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 @UtilityClass
 public class Throws {
 
+    /**
+     * Returns {@code throwable} as an unchecked exception, for {@code throw Throws.unchecked(e)}:
+     * a {@link RuntimeException} is returned as-is, an {@link Error} is thrown directly, and any
+     * other exception is wrapped in a {@link RuntimeException}.
+     */
+    public @NotNull RuntimeException unchecked(
+            @NotNull final Throwable throwable
+    ) {
+        Validates.require(throwable, "throwable");
+
+        if (throwable instanceof RuntimeException runtime) {
+            return runtime;
+        }
+
+        if (throwable instanceof Error error) {
+            throw error;
+        }
+
+        return new RuntimeException(throwable);
+    }
+
+    /**
+     * Returns the innermost cause of {@code throwable}, or {@code throwable} itself if it has none.
+     * Stops safely at a cause cycle.
+     */
+    public @NotNull Throwable rootCause(
+            @NotNull final Throwable throwable
+    ) {
+        Validates.require(throwable, "throwable");
+
+        // Cycle check without allocating: a second pointer follows at half speed and meets the
+        // first one only if the chain loops back on itself.
+        Throwable current = throwable;
+        Throwable trailing = throwable;
+        boolean advanceTrailing = false;
+        while (current.getCause() != null) {
+            current = current.getCause();
+            if (current == trailing) {
+                break;
+            }
+
+            if (advanceTrailing) {
+                trailing = trailing.getCause();
+            }
+            advanceTrailing = !advanceTrailing;
+        }
+
+        return current;
+    }
+
+    /**
+     * Describes {@code throwable} in one line for users: its root cause's message, or the root
+     * cause's {@code toString()} when it has no message.
+     */
+    public @NotNull String describe(
+            @NotNull final Throwable throwable
+    ) {
+        val root = rootCause(throwable);
+        val message = root.getMessage();
+        return message != null ? message : root.toString();
+    }
+
     public <X extends Throwable> void ignore(
             @NotNull final XRunnable<X> runnable
     ) {
-        Objects.requireNonNull(runnable, "runnable must not be null");
+        Validates.require(runnable, "runnable");
 
         try {
             runnable.run();
@@ -46,7 +108,7 @@ public class Throws {
             @NotNull final XRunnable<X> runnable,
             @NotNull final Runnable otherwise
     ) {
-        Objects.requireNonNull(runnable, "runnable must not be null");
+        Validates.require(runnable, "runnable");
 
         try {
             runnable.run();
@@ -58,7 +120,7 @@ public class Throws {
     public <T, X extends Throwable> T ignoreOr(
             @NotNull final XSupplier<T, X> supplier
     ) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         try {
             return supplier.get();
@@ -71,7 +133,7 @@ public class Throws {
             @NotNull final XSupplier<T, X> supplier,
             final T otherwise
     ) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         try {
             return supplier.get();
@@ -84,7 +146,7 @@ public class Throws {
             @NotNull final XSupplier<T, X> supplier,
             @NotNull final Supplier<T> otherwise
     ) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         try {
             return supplier.get();
