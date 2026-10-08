@@ -20,8 +20,6 @@
 
 package net.clydo.clytil.str;
 
-import lombok.Value;
-import lombok.experimental.Accessors;
 import lombok.val;
 import net.clydo.clytil.Maths;
 import org.jetbrains.annotations.Contract;
@@ -32,14 +30,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Accessors(fluent = true)
-@Value(staticConstructor = "of")
-public class Substring {
+public record Substring(int beginIndex, int endIndex) {
 
     public static final Substring EMPTY = Substring.of(0, 0);
 
-    int beginIndex;
-    int endIndex;
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull Substring of(
+            final int beginIndex,
+            final int endIndex
+    ) {
+        return new Substring(beginIndex, endIndex);
+    }
 
     @Contract(pure = true)
     public @NotNull @Unmodifiable String slice(

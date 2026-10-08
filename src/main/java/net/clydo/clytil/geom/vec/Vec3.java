@@ -20,24 +20,22 @@
 
 package net.clydo.clytil.geom.vec;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
 
 @With
-@Value
-@AllArgsConstructor(staticName = "of")
-public class Vec3 implements Vector<Vec3> {
+public record Vec3(double x, double y, double z) implements Vector<Vec3> {
 
     public static final Vec3 ZERO = Vec3.of(0, 0, 0);
     public static final Vec3 ONE = Vec3.of(1, 1, 1);
 
-    double x;
-
-    double y;
-
-    double z;
+    public static @NotNull Vec3 of(
+            final double x,
+            final double y,
+            final double z
+    ) {
+        return new Vec3(x, y, z);
+    }
 
     @Override
     public int getDimensions() {
