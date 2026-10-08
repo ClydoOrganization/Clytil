@@ -1,7 +1,7 @@
 plugins {
-    java
-    `java-library`
-    `maven-publish`
+    id("java")
+    id("java-library")
+    id("maven-publish")
     id("io.freefair.lombok") version "9.7.0"
 }
 
