@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.*;
 
 @UtilityClass
-public class Inits {
+public class Values {
 
     // ---------- Functions ----------
 
