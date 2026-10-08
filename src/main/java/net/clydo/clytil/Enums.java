@@ -25,7 +25,6 @@ import lombok.val;
 import net.clydo.clytil.option.Option;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +61,22 @@ public class Enums {
         val set = EnumSet.noneOf(Validates.require(clazz, "clazz"));
         set.addAll(values);
         return Collections.unmodifiableSet(set);
+    }
+
+    /**
+     * Returns every constant of the enum except the given ones.
+     *
+     * @return a new, mutable set
+     */
+    @SafeVarargs
+    @Contract("_, _ -> new")
+    public <T extends Enum<T>> @NotNull EnumSet<T> allExcept(
+            @NotNull final T excluded,
+            @NotNull final T... moreExcluded
+    ) {
+        Validates.require(excluded, "excluded");
+
+        return EnumSet.complementOf(EnumSet.of(excluded, moreExcluded));
     }
 
     @Contract(pure = true)
@@ -125,43 +140,6 @@ public class Enums {
     ) {
         return Arrays.stream(values)
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), Enum::ordinal));
-    }
-
-    /**
-     * Picks the highest-priority element that is both available and allowed.
-     *
-     * @param available     elements to choose from
-     * @param priorityOrder candidates ordered from highest to lowest priority
-     * @param allowed       optional filter; {@code null} or empty allows everything
-     * @param fallback      returned when nothing matches
-     * @param <T>           element type
-     * @return the first priority element found, or {@code fallback}
-     */
-    public <T> T firstMatch(
-            @NotNull final Collection<T> available,
-            @NotNull final List<T> priorityOrder,
-            @Nullable final Set<T> allowed,
-            @NotNull final T fallback
-    ) {
-        if (available.isEmpty()) {
-            return fallback;
-        }
-
-        val filtered = (allowed == null || allowed.isEmpty())
-                ? available
-                : available.stream().filter(allowed::contains).toList();
-
-        if (filtered.isEmpty()) {
-            return fallback;
-        }
-
-        for (val candidate : priorityOrder) {
-            if (filtered.contains(candidate)) {
-                return candidate;
-            }
-        }
-
-        return fallback;
     }
 
 }
