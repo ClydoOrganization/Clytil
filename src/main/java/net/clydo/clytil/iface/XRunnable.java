@@ -20,6 +20,13 @@
 
 package net.clydo.clytil.iface;
 
+import org.jetbrains.annotations.NotNullByDefault;
+
+/**
+ * A {@link Runnable} that may throw {@code X}.
+ */
+@FunctionalInterface
+@NotNullByDefault
 public interface XRunnable<X extends Throwable> {
 
     void run() throws X;

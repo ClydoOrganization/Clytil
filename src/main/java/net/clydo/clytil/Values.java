@@ -22,43 +22,59 @@ package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNullByDefault;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.*;
 
+/**
+ * Runs functional interfaces against a value inline. Values may be {@code null}; the functions may not.
+ * <p>
+ * Nullability follows the arguments: a nullable value makes the function's parameter nullable, and
+ * the result is nullable only if the function's result is.
+ * <p>
+ * {@code apply}, {@code accept} and {@code test} also have {@link Supplier} overloads that take the value from
+ * the supplier. Because of them, a bare {@code null} literal is ambiguous: write {@code apply((String) null, ...)}
+ * or pass a typed variable.
+ */
 @UtilityClass
+@NotNullByDefault
 public class Values {
 
     // ---------- Functions ----------
 
-    public <T, R> R apply(
-            @NotNull final T t,
-            @NotNull final Function<? super T, ? extends R> function
+    public <T extends @Nullable Object, R extends @Nullable Object> R apply(
+            final T value,
+            final Function<? super T, ? extends R> function
     ) {
         Validates.require(function, "function");
 
-        return function.apply(t);
+        return function.apply(value);
     }
 
+    /**
+     * Applies each function to {@code value} in order and returns the last result, or {@code null}
+     * when no functions are given.
+     */
     @SafeVarargs
-    public <T, R> R apply(
-            @NotNull final T t,
-            @NotNull final Function<? super T, ? extends R>... functions
+    public <T extends @Nullable Object, R extends @Nullable Object> @Nullable R apply(
+            final T value,
+            final Function<? super T, ? extends R>... functions
     ) {
         Validates.require(functions, "functions");
 
         R result = null;
-
         for (val function : functions) {
-            result = function.apply(t);
+            result = function.apply(value);
         }
 
         return result;
     }
 
-    public <T, R> R apply(
-            @NotNull final Supplier<T> supplier,
-            @NotNull final Function<? super T, ? extends R> function
+    public <T extends @Nullable Object, R extends @Nullable Object> R apply(
+            final Supplier<? extends T> supplier,
+            final Function<? super T, ? extends R> function
     ) {
         Validates.require(supplier, "supplier");
         Validates.require(function, "function");
@@ -67,18 +83,18 @@ public class Values {
     }
 
     @SafeVarargs
-    public <T, R> R apply(
-            @NotNull final Supplier<T> supplier,
-            @NotNull final Function<? super T, ? extends R>... functions
+    public <T extends @Nullable Object, R extends @Nullable Object> @Nullable R apply(
+            final Supplier<? extends T> supplier,
+            final Function<? super T, ? extends R>... functions
     ) {
         Validates.require(supplier, "supplier");
         Validates.require(functions, "functions");
 
-        val t = supplier.get();
+        val value = supplier.get();
 
         R result = null;
         for (val function : functions) {
-            result = function.apply(t);
+            result = function.apply(value);
         }
 
         return result;
@@ -86,98 +102,100 @@ public class Values {
 
     // ---------- BiFunctions ----------
 
-    public <T, U, R> R apply(
-            @NotNull final T t,
-            @NotNull final U u,
-            @NotNull final BiFunction<? super T, ? super U, ? extends R> function
+    public <T extends @Nullable Object, U extends @Nullable Object, R extends @Nullable Object> R apply(
+            final T first,
+            final U second,
+            final BiFunction<? super T, ? super U, ? extends R> function
     ) {
         Validates.require(function, "function");
 
-        return function.apply(t, u);
+        return function.apply(first, second);
     }
 
     // ---------- Consumers ----------
 
-    public <T> T accept(
-            @NotNull final T t,
-            @NotNull final Consumer<? super T> consumer
+    @Contract("_, _ -> param1")
+    public <T extends @Nullable Object> T accept(
+            final T value,
+            final Consumer<? super T> consumer
     ) {
         Validates.require(consumer, "consumer");
 
-        consumer.accept(t);
-        return t;
+        consumer.accept(value);
+        return value;
     }
 
     @SafeVarargs
-    public <T> T accept(
-            @NotNull final T t,
-            @NotNull final Consumer<? super T>... consumers
+    @Contract("_, _ -> param1")
+    public <T extends @Nullable Object> T accept(
+            final T value,
+            final Consumer<? super T>... consumers
     ) {
         Validates.require(consumers, "consumers");
 
         for (val consumer : consumers) {
-            consumer.accept(t);
+            consumer.accept(value);
         }
 
-        return t;
+        return value;
     }
 
-    public <T> T accept(
-            @NotNull final Supplier<T> supplier,
-            @NotNull final Consumer<? super T> consumer
+    public <T extends @Nullable Object> T accept(
+            final Supplier<? extends T> supplier,
+            final Consumer<? super T> consumer
     ) {
         Validates.require(supplier, "supplier");
         Validates.require(consumer, "consumer");
 
-        val t = supplier.get();
-        consumer.accept(t);
+        val value = supplier.get();
+        consumer.accept(value);
 
-        return t;
+        return value;
     }
 
     @SafeVarargs
-    public <T> T accept(
-            @NotNull final Supplier<T> supplier,
-            @NotNull final Consumer<? super T>... consumers
+    public <T extends @Nullable Object> T accept(
+            final Supplier<? extends T> supplier,
+            final Consumer<? super T>... consumers
     ) {
         Validates.require(supplier, "supplier");
         Validates.require(consumers, "consumers");
 
-        val t = supplier.get();
+        val value = supplier.get();
 
         for (val consumer : consumers) {
-            consumer.accept(t);
+            consumer.accept(value);
         }
 
-        return t;
+        return value;
     }
 
     // ---------- BiConsumers ----------
 
-    public <T, U> void accept(
-            @NotNull final T t,
-            @NotNull final U u,
-            @NotNull final BiConsumer<? super T, ? super U> consumer
+    public <T extends @Nullable Object, U extends @Nullable Object> void accept(
+            final T first,
+            final U second,
+            final BiConsumer<? super T, ? super U> consumer
     ) {
         Validates.require(consumer, "consumer");
 
-        consumer.accept(t, u);
+        consumer.accept(first, second);
     }
 
     // ---------- Predicates ----------
 
-    public <T> boolean test(
-            @NotNull final T t,
-            @NotNull final Predicate<? super T> predicate
+    public <T extends @Nullable Object> boolean test(
+            final T value,
+            final Predicate<? super T> predicate
     ) {
         Validates.require(predicate, "predicate");
 
-        return predicate.test(t);
+        return predicate.test(value);
     }
 
-    public <T> boolean test(
-            @NotNull final Supplier<T> supplier,
-            @NotNull final Predicate<? super T> predicate
+    public <T extends @Nullable Object> boolean test(
+            final Supplier<? extends T> supplier,
+            final Predicate<? super T> predicate
     ) {
         Validates.require(supplier, "supplier");
         Validates.require(predicate, "predicate");
@@ -187,8 +205,8 @@ public class Values {
 
     // ---------- Suppliers ----------
 
-    public <T> T get(
-            @NotNull Supplier<T> supplier
+    public <T extends @Nullable Object> T get(
+            final Supplier<? extends T> supplier
     ) {
         Validates.require(supplier, "supplier");
 
@@ -196,7 +214,7 @@ public class Values {
     }
 
     public boolean get(
-            @NotNull final BooleanSupplier supplier
+            final BooleanSupplier supplier
     ) {
         Validates.require(supplier, "supplier");
 

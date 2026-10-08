@@ -22,11 +22,7 @@ package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import net.clydo.clytil.iface.XRunnable;
-import net.clydo.clytil.iface.XSupplier;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 @UtilityClass
 public class Throws {
@@ -91,68 +87,6 @@ public class Throws {
         val root = rootCause(throwable);
         val message = root.getMessage();
         return message != null ? message : root.toString();
-    }
-
-    public <X extends Throwable> void ignore(
-            @NotNull final XRunnable<X> runnable
-    ) {
-        Validates.require(runnable, "runnable");
-
-        try {
-            runnable.run();
-        } catch (Throwable ignored) {
-        }
-    }
-
-    public <X extends Throwable> void ignoreOr(
-            @NotNull final XRunnable<X> runnable,
-            @NotNull final Runnable otherwise
-    ) {
-        Validates.require(runnable, "runnable");
-
-        try {
-            runnable.run();
-        } catch (Throwable ignored) {
-            otherwise.run();
-        }
-    }
-
-    public <T, X extends Throwable> T ignoreOr(
-            @NotNull final XSupplier<T, X> supplier
-    ) {
-        Validates.require(supplier, "supplier");
-
-        try {
-            return supplier.get();
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
-
-    public <T, X extends Throwable> T ignoreOr(
-            @NotNull final XSupplier<T, X> supplier,
-            final T otherwise
-    ) {
-        Validates.require(supplier, "supplier");
-
-        try {
-            return supplier.get();
-        } catch (Throwable ignored) {
-            return otherwise;
-        }
-    }
-
-    public <T, X extends Throwable> T ignoreOr(
-            @NotNull final XSupplier<T, X> supplier,
-            @NotNull final Supplier<T> otherwise
-    ) {
-        Validates.require(supplier, "supplier");
-
-        try {
-            return supplier.get();
-        } catch (Throwable ignored) {
-            return otherwise.get();
-        }
     }
 
 }

@@ -24,12 +24,12 @@ import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A {@link java.util.function.Supplier} that may throw {@code X}.
+ * A {@link java.util.function.Consumer} that may throw {@code X}.
  */
 @FunctionalInterface
 @NotNullByDefault
-public interface XSupplier<T extends @Nullable Object, X extends Throwable> {
+public interface XConsumer<T extends @Nullable Object, X extends Throwable> {
 
-    T get() throws X;
+    void accept(final T t) throws X;
 
 }
