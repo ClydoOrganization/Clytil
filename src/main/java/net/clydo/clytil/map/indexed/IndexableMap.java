@@ -21,9 +21,11 @@
 package net.clydo.clytil.map.indexed;
 
 import lombok.val;
+import net.clydo.clytil.Validates;
 import net.clydo.clytil.map.DelegatingMap;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +42,8 @@ public class IndexableMap<K, V> extends DelegatingMap<K, V> {
     private IndexableMap(Map<K, V> map, List<K> keyList) {
         super(map);
 
-        Objects.requireNonNull(map, "map must not be null");
-        Objects.requireNonNull(keyList, "keyList must not be null");
+        Validates.require(map, "map");
+        Validates.require(keyList, "keyList");
 
         if (!map.keySet().equals(new HashSet<>(keyList))) {
             throw new IllegalArgumentException("keyList must represent the same keys as the map");
@@ -62,7 +64,7 @@ public class IndexableMap<K, V> extends DelegatingMap<K, V> {
      * Creates a IndexableMap.
      */
     @Contract("_, _ -> new")
-    public static <K, V> @NotNull IndexableMap<K, V> create(Map<K, V> map, List<K> keyList) {
+    public static <K, V> @NotNull IndexableMap<K, V> create(@NotNull final Map<K, V> map, @NotNull final List<K> keyList) {
         return new IndexableMap<>(map, keyList);
     }
 
@@ -135,7 +137,7 @@ public class IndexableMap<K, V> extends DelegatingMap<K, V> {
 
     @SuppressWarnings("SuspiciousMethodCalls")
     @Override
-    public V remove(Object key) {
+    public V remove(@Nullable final Object key) {
         if (this.keyList.remove(key)) {
             return super.remove(key);
         }
@@ -164,7 +166,7 @@ public class IndexableMap<K, V> extends DelegatingMap<K, V> {
      *
      * @param comparator Comparator to sort the keys.
      */
-    public void sortKeys(Comparator<K> comparator) {
+    public void sortKeys(@Nullable final Comparator<K> comparator) {
         this.keyList.sort(comparator);
     }
 

@@ -147,7 +147,7 @@ public final class DepthTracker {
 
     @Contract(value = "_ -> new", pure = true)
     private @NotNull IllegalStateException error(
-            final String message
+            @NotNull final String message
     ) {
         return new IllegalStateException(
                 this.name + ": " + message

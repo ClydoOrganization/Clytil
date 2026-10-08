@@ -21,6 +21,8 @@
 package net.clydo.clytil.cache;
 
 import lombok.val;
+import net.clydo.clytil.Validates;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -49,9 +51,9 @@ public class FastRegex {
         }
     }
 
-    public boolean matches(CharSequence input, String regex) {
-        Objects.requireNonNull(input, "input must not be null");
-        Objects.requireNonNull(regex, "regex must not be null");
+    public boolean matches(@NotNull final CharSequence input, @NotNull final String regex) {
+        Validates.require(input, "input");
+        Validates.require(regex, "regex");
 
         if (this.invalidRegexes.contains(regex)) {
             return false;

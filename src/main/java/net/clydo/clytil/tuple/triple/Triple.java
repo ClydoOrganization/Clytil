@@ -20,6 +20,9 @@
 
 package net.clydo.clytil.tuple.triple;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 public abstract class Triple<F, S, T> {
@@ -63,7 +66,7 @@ public abstract class Triple<F, S, T> {
 //    }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable final Object obj) {
         if (obj == this) {
             return true;
         }
@@ -85,7 +88,7 @@ public abstract class Triple<F, S, T> {
         return "(" + this.first() + ", " + this.second() + ", " + this.third() + ")";
     }
 
-    public String toString(final String format) {
+    public String toString(@NotNull final String format) {
         return String.format(format, this.first(), this.second(), this.third());
     }
 

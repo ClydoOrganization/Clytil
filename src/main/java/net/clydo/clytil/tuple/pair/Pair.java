@@ -22,6 +22,7 @@ package net.clydo.clytil.tuple.pair;
 
 import lombok.val;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -105,7 +106,7 @@ public abstract class Pair<F, S> implements Map.Entry<F, S> {
 //    }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable final Object obj) {
         if (obj == this) {
             return true;
         }
@@ -127,7 +128,7 @@ public abstract class Pair<F, S> implements Map.Entry<F, S> {
         return "(" + this.first() + ", " + this.second() + ")";
     }
 
-    public String toString(final String format) {
+    public String toString(@NotNull final String format) {
         return String.format(format, this.first(), this.second());
     }
 

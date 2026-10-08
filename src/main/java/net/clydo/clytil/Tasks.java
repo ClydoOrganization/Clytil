@@ -98,7 +98,7 @@ public class Tasks {
      * @param rollback the task to execute for rollback
      * @return a new {@link ReversibleTask} instance
      */
-    public ReversibleTask reversible(Task task, Task rollback) {
+    public ReversibleTask reversible(@NotNull final Task task, @NotNull final Task rollback) {
         return new ReversibleTask(task, rollback);
     }
 

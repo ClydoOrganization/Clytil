@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class UniqueList<E> extends DelegatingList<E> {
 
-    protected UniqueList(final List<E> list) {
+    protected UniqueList(@NotNull final List<E> list) {
         super(list);
     }
 

@@ -21,6 +21,7 @@
 package net.clydo.clytil.list;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +33,7 @@ public abstract class DelegatingList<E> extends DelegatingCollection<E> implemen
         super();
     }
 
-    public DelegatingList(final List<E> list) {
+    public DelegatingList(@NotNull final List<E> list) {
         super(list);
     }
 
@@ -42,7 +43,7 @@ public abstract class DelegatingList<E> extends DelegatingCollection<E> implemen
     }
 
     @Override
-    public boolean equals(final Object object) {
+    public boolean equals(@Nullable final Object object) {
         return object == this || this.delegate().equals(object);
     }
 
@@ -67,12 +68,12 @@ public abstract class DelegatingList<E> extends DelegatingCollection<E> implemen
     }
 
     @Override
-    public int indexOf(Object o) {
+    public int indexOf(@Nullable final Object o) {
         return this.delegate().indexOf(o);
     }
 
     @Override
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(@Nullable final Object o) {
         return this.delegate().lastIndexOf(o);
     }
 

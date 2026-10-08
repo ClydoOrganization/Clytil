@@ -21,6 +21,7 @@
 package net.clydo.clytil.list.unique;
 
 import net.clydo.clytil.list.DelegatingListIterator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ListIterator;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class SetListListIterator<E> extends DelegatingListIterator<E> {
     private final Set<E> set;
     private E last = null;
 
-    protected SetListListIterator(final ListIterator<E> it, final Set<E> set) {
+    protected SetListListIterator(@NotNull final ListIterator<E> it, @NotNull final Set<E> set) {
         super(it);
         this.set = set;
     }

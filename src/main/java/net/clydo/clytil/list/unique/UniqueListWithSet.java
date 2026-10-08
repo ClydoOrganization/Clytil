@@ -21,7 +21,9 @@
 package net.clydo.clytil.list.unique;
 
 import lombok.val;
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -31,13 +33,13 @@ public class UniqueListWithSet<E> extends UniqueList<E> {
 
     private final Set<E> set;
 
-    protected UniqueListWithSet(final List<E> list, final Set<E> set) {
+    protected UniqueListWithSet(@NotNull final List<E> list, @NotNull final Set<E> set) {
         super(list);
-        this.set = Objects.requireNonNull(set, "set must not be null");
+        this.set = Validates.require(set, "set");
     }
 
     @Override
-    public boolean contains(Object o) {
+    public boolean contains(@Nullable final Object o) {
         return this.set.contains(o);
     }
 
@@ -47,7 +49,7 @@ public class UniqueListWithSet<E> extends UniqueList<E> {
     }
 
     @Override
-    public boolean remove(Object o) {
+    public boolean remove(@Nullable final Object o) {
         val removed = this.set.remove(o);
 
         if (removed) {
@@ -173,7 +175,7 @@ public class UniqueListWithSet<E> extends UniqueList<E> {
     }
 
     @SuppressWarnings("unchecked")
-    protected Set<E> createSetBasedOnList(@NotNull final Set<E> set, final List<E> list) {
+    protected Set<E> createSetBasedOnList(@NotNull final Set<E> set, @NotNull final List<E> list) {
         Set<E> subSet;
         val setType = (Class<Set<E>>) set.getClass();
         if (setType.equals(HashSet.class)) {

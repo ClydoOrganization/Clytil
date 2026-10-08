@@ -20,10 +20,10 @@
 
 package net.clydo.clytil.iface;
 
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 
 @FunctionalInterface
 public interface Condition {
@@ -56,7 +56,7 @@ public interface Condition {
     default Condition and(
             @NotNull final Condition other
     ) {
-        Objects.requireNonNull(other);
+        Validates.require(other, "other");
         return () -> this.test() && other.test();
     }
 
@@ -69,7 +69,7 @@ public interface Condition {
     default Condition or(
             @NotNull final Condition other
     ) {
-        Objects.requireNonNull(other);
+        Validates.require(other, "other");
         return () -> this.test() || other.test();
     }
 

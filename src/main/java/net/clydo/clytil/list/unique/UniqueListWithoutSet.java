@@ -28,7 +28,7 @@ import java.util.List;
 
 public class UniqueListWithoutSet<E> extends UniqueList<E> {
 
-    protected UniqueListWithoutSet(final List<E> list) {
+    protected UniqueListWithoutSet(@NotNull final List<E> list) {
         super(list);
     }
 

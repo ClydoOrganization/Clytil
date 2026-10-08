@@ -22,6 +22,7 @@ package net.clydo.clytil.list.unique;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,13 +31,14 @@ import java.util.*;
 @UtilityClass
 public class UniqueLists {
 
+    @Contract(" -> new")
     public <E> @NotNull UniqueListWithoutSet<E> unsafe() {
         return UniqueLists.unsafe(new ArrayList<>());
     }
 
-    @Contract("null -> fail")
-    public <E> @NotNull UniqueListWithoutSet<E> unsafe(final List<E> list) {
-        Objects.requireNonNull(list, "list must not be null");
+    @Contract("null -> fail; _ -> new")
+    public <E> @NotNull UniqueListWithoutSet<E> unsafe(@NotNull final List<E> list) {
+        Validates.require(list, "list");
 
         if (list.isEmpty()) {
             return new UniqueListWithoutSet<>(list);
@@ -49,23 +51,25 @@ public class UniqueLists {
         return sl;
     }
 
+    @Contract(" -> new")
     public <E> @NotNull UniqueListWithSet<E> safe() {
         return UniqueLists.safe(new ArrayList<>(), new HashSet<>());
     }
 
-    @Contract("null -> fail")
-    public <E> @NotNull UniqueListWithSet<E> safe(final List<E> list) {
+    @Contract("null -> fail; _ -> new")
+    public <E> @NotNull UniqueListWithSet<E> safe(@NotNull final List<E> list) {
         return UniqueLists.safe(list, new HashSet<>());
     }
 
-    public <E> @NotNull UniqueListWithSet<E> safe(final Set<E> set) {
+    @Contract("null -> fail; _ -> new")
+    public <E> @NotNull UniqueListWithSet<E> safe(@NotNull final Set<E> set) {
         return UniqueLists.safe(new ArrayList<>(), set);
     }
 
-    @Contract("null, null -> fail")
-    public <E> @NotNull UniqueListWithSet<E> safe(final List<E> list, final Set<E> set) {
-        Objects.requireNonNull(list, "list must not be null");
-        Objects.requireNonNull(set, "set must not be null");
+    @Contract("null, _ -> fail; _, null -> fail; _, _ -> new")
+    public <E> @NotNull UniqueListWithSet<E> safe(@NotNull final List<E> list, @NotNull final Set<E> set) {
+        Validates.require(list, "list");
+        Validates.require(set, "set");
 
         if (list.isEmpty()) {
             return new UniqueListWithSet<>(list, set);

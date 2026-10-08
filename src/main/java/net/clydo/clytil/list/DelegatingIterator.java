@@ -20,11 +20,13 @@
 
 package net.clydo.clytil.list;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 
 public abstract class DelegatingIterator<E> extends DelegatingUntypedIterator<E, E> {
 
-    protected DelegatingIterator(final Iterator<E> iterator) {
+    protected DelegatingIterator(@NotNull final Iterator<E> iterator) {
         super(iterator);
     }
 

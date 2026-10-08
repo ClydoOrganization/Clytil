@@ -20,12 +20,13 @@
 
 package net.clydo.clytil.list;
 
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public abstract class DelegatingCollection<E> implements Collection<E>, Serializable {
@@ -36,8 +37,8 @@ public abstract class DelegatingCollection<E> implements Collection<E>, Serializ
         super();
     }
 
-    public DelegatingCollection(Collection<E> collection) {
-        this.delegate = Objects.requireNonNull(collection, "collection must not be null");
+    public DelegatingCollection(@NotNull final Collection<E> collection) {
+        this.delegate = Validates.require(collection, "collection");
     }
 
     public Collection<E> delegate() {
@@ -50,7 +51,7 @@ public abstract class DelegatingCollection<E> implements Collection<E>, Serializ
     }
 
     @Override
-    public boolean remove(Object o) {
+    public boolean remove(@Nullable final Object o) {
         return this.delegate.remove(o);
     }
 
@@ -65,7 +66,7 @@ public abstract class DelegatingCollection<E> implements Collection<E>, Serializ
     }
 
     @Override
-    public boolean contains(Object o) {
+    public boolean contains(@Nullable final Object o) {
         return this.delegate.contains(o);
     }
 

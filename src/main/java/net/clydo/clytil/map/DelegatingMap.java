@@ -20,13 +20,13 @@
 
 package net.clydo.clytil.map;
 
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class DelegatingMap<K, V> implements Map<K, V>, Serializable {
@@ -37,8 +37,8 @@ public class DelegatingMap<K, V> implements Map<K, V>, Serializable {
         super();
     }
 
-    public DelegatingMap(Map<K, V> map) {
-        this.delegate = Objects.requireNonNull(map, "map must not be null");
+    public DelegatingMap(@NotNull final Map<K, V> map) {
+        this.delegate = Validates.require(map, "map");
     }
 
     public Map<K, V> delegate() {
@@ -56,17 +56,17 @@ public class DelegatingMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public boolean containsKey(@Nullable final Object key) {
         return this.delegate.containsKey(key);
     }
 
     @Override
-    public boolean containsValue(Object value) {
+    public boolean containsValue(@Nullable final Object value) {
         return this.delegate.containsValue(value);
     }
 
     @Override
-    public V get(Object key) {
+    public V get(@Nullable final Object key) {
         return this.delegate.get(key);
     }
 
@@ -76,7 +76,7 @@ public class DelegatingMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public V remove(Object key) {
+    public V remove(@Nullable final Object key) {
         return this.delegate.remove(key);
     }
 

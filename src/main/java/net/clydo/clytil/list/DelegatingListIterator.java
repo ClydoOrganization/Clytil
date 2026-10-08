@@ -20,15 +20,17 @@
 
 package net.clydo.clytil.list;
 
+import net.clydo.clytil.Validates;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ListIterator;
-import java.util.Objects;
 
 public class DelegatingListIterator<E> implements ListIterator<E> {
 
     private final ListIterator<E> iterator;
 
-    public DelegatingListIterator(final ListIterator<E> iterator) {
-        this.iterator = Objects.requireNonNull(iterator, "iterator");
+    public DelegatingListIterator(@NotNull final ListIterator<E> iterator) {
+        this.iterator = Validates.require(iterator, "iterator");
     }
 
     @Override

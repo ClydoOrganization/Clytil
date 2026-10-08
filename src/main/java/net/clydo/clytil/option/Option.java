@@ -21,6 +21,7 @@
 package net.clydo.clytil.option;
 
 import lombok.val;
+import net.clydo.clytil.Validates;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public class Option<V> {
     public static <T> @NotNull Option<T> some(
             @NotNull final T value
     ) {
-        Objects.requireNonNull(value, "value must not be null");
+        Validates.require(value, "value");
 
         return new Option<>(value);
     }
@@ -61,7 +62,7 @@ public class Option<V> {
 
     @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
     public static <T> Option<T> fromJava(@Nullable java.util.Optional<T> optional) {
-        Objects.requireNonNull(optional, "optional must not be null");
+        Validates.require(optional, "optional");
 
         return optional.map(Option::some).orElseGet(Option::none);
     }
@@ -90,7 +91,7 @@ public class Option<V> {
 
     @NotNull
     public Option<V> ifSome(@NotNull Consumer<? super @NotNull V> action) {
-        Objects.requireNonNull(action, "action must not be null");
+        Validates.require(action, "action");
 
         if (this.isSome()) {
             action.accept(this.value);
@@ -101,7 +102,7 @@ public class Option<V> {
 
     @NotNull
     public Option<V> ifNone(@NotNull Runnable action) {
-        Objects.requireNonNull(action, "action must not be null");
+        Validates.require(action, "action");
 
         if (this.isNone()) {
             action.run();
@@ -132,7 +133,7 @@ public class Option<V> {
 
     @NotNull
     public Option<V> filter(@NotNull Predicate<? super @NotNull V> predicate) {
-        Objects.requireNonNull(predicate, "predicate must not be null");
+        Validates.require(predicate, "predicate");
 
         if (this.isNone() || predicate.test(this.value)) {
             return this;
@@ -143,7 +144,7 @@ public class Option<V> {
 
     @NotNull
     public <U> Option<U> map(@NotNull Function<? super @NotNull V, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper must not be null");
+        Validates.require(mapper, "mapper");
 
         if (this.isNone()) {
             return Option.none();
@@ -154,20 +155,20 @@ public class Option<V> {
 
     @NotNull
     public <U> Option<U> flatMap(@NotNull Function<? super @NotNull V, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper must not be null");
+        Validates.require(mapper, "mapper");
 
         if (this.isNone()) {
             return Option.none();
         }
 
-        return Objects.requireNonNull((Option<U>) mapper.apply(this.value));
+        return Validates.require((Option<U>) mapper.apply(this.value), "mapper result");
     }
 
     //
 
     @NotNull
     public Option<V> or(@NotNull Option<? extends V> other) {
-        Objects.requireNonNull(other, "other must not be null");
+        Validates.require(other, "other");
 
         if (this.isNone()) {
             return (Option<V>) other;
@@ -187,7 +188,7 @@ public class Option<V> {
 
     @NotNull
     public Option<V> orGet(@NotNull Supplier<? extends @NotNull Option<? extends V>> supplier) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         if (this.isNone()) {
             return (Option<V>) supplier.get();
@@ -198,7 +199,7 @@ public class Option<V> {
 
     @NotNull
     public Option<V> orGetFlat(@NotNull Supplier<? extends V> supplier) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         if (this.isNone()) {
             return Option.from(supplier.get());
@@ -210,7 +211,7 @@ public class Option<V> {
     //
 
     public V orElse(@NotNull Option<? extends V> other) {
-        Objects.requireNonNull(other, "other must not be null");
+        Validates.require(other, "other");
 
         if (this.isNone()) {
             return other.orNull();
@@ -228,7 +229,7 @@ public class Option<V> {
     }
 
     public V orElseGet(@NotNull Supplier<? extends @NotNull Option<? extends V>> supplier) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         if (this.isNone()) {
             return this.orElse(supplier.get());
@@ -238,7 +239,7 @@ public class Option<V> {
     }
 
     public V orElseGetFlat(@NotNull Supplier<? extends V> supplier) {
-        Objects.requireNonNull(supplier, "supplier must not be null");
+        Validates.require(supplier, "supplier");
 
         if (this.isNone()) {
             return supplier.get();

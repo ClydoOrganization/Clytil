@@ -36,7 +36,7 @@ public class Array<T> {
     private T[] array;
 
     private Array(@NotNull final T[] array) {
-        this.array = Objects.requireNonNull(array, "array must not be null");
+        this.array = Validates.require(array, "array");
     }
 
     public void set(final int index, final T element) {
@@ -49,15 +49,15 @@ public class Array<T> {
 
     @NotNull
     public T[] set(final T[] array) {
-        Objects.requireNonNull(array, "array must not be null");
+        Validates.require(array, "array");
 
         val previous = this.array;
         this.array = array;
         return previous;
     }
 
-    public Array<T> map(final Function<T, T> mapper) {
-        Objects.requireNonNull(mapper, "mapper must not be null");
+    public Array<T> map(@NotNull final Function<T, T> mapper) {
+        Validates.require(mapper, "mapper");
         for (int i = 0; i < this.array.length; i++) {
             this.array[i] = mapper.apply(this.array[i]);
         }
