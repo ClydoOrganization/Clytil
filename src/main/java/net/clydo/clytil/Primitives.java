@@ -111,9 +111,23 @@ public class Primitives {
         return WRAPPER_TO_PRIMITIVE.containsKey(type);
     }
 
-    @Nullable
-    public Object defaultValue(
-            @NotNull final Class<?> type
+    private final Boolean BOOLEAN_FALSE = Boolean.FALSE;
+    private final Float FLOAT_ZERO = 0F;
+    private final Byte BYTE_ZERO = (byte) 0;
+    private final Character CHARACTER_ZERO = (char) 0;
+    private final Short SHORT_ZERO = (short) 0;
+    private final Integer INT_ZERO = 0;
+    private final Double DOUBLE_ZERO = 0D;
+    private final Long LONG_ZERO = 0L;
+
+    /**
+     * Returns the default value of {@code type}: what an uninitialized field of that type holds,
+     * such as {@code 0} for {@code int} and {@code false} for {@code boolean}. It is {@code null}
+     * for reference types and {@code void}.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> @Nullable T defaultValue(
+            @NotNull final Class<T> type
     ) {
         Validates.require(type, "type");
 
@@ -122,30 +136,44 @@ public class Primitives {
         }
 
         if (type == boolean.class) {
-            return Boolean.FALSE;
+            return (T) BOOLEAN_FALSE;
         }
         if (type == byte.class) {
-            return (byte) 0;
+            return (T) BYTE_ZERO;
         }
         if (type == char.class) {
-            return (char) 0;
+            return (T) CHARACTER_ZERO;
         }
         if (type == short.class) {
-            return (short) 0;
+            return (T) SHORT_ZERO;
         }
         if (type == int.class) {
-            return 0;
+            return (T) INT_ZERO;
         }
         if (type == float.class) {
-            return 0F;
+            return (T) FLOAT_ZERO;
         }
         if (type == double.class) {
-            return 0D;
+            return (T) DOUBLE_ZERO;
         }
         if (type == long.class) {
-            return 0L;
+            return (T) LONG_ZERO;
         }
 
         return null;
     }
+
+    /**
+     * Returns {@code value}, or the {@link #defaultValue(Class) default value} of {@code type} when
+     * {@code value} is {@code null}.
+     */
+    public <T> @Nullable T orDefault(
+            @Nullable final T value,
+            @NotNull final Class<T> type
+    ) {
+        Validates.require(type, "type");
+
+        return value != null ? value : defaultValue(type);
+    }
+
 }

@@ -30,6 +30,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -123,44 +125,100 @@ public class Types {
         );
     }
 
-    public <T> boolean is(Class<T> type, Class<?> expected) {
+    public <T> boolean is(@Nullable final Class<T> type, @Nullable final Class<?> expected) {
         return type == expected;
     }
 
-    public <T> boolean isString(Class<T> type) {
+    public <T> boolean isString(@Nullable final Class<T> type) {
         return type == String.class;
     }
 
-    public <T> boolean isBigDecimal(Class<T> type) {
-        return Numbers.isBigDecimal(type);
+    /**
+     * Checks if the provided type is {@link BigDecimal}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link BigDecimal}, {@code false} otherwise
+     */
+    public <T> boolean isBigDecimal(@Nullable final Class<T> type) {
+        return type == BigDecimal.class;
     }
 
-    public <T> boolean isBigInteger(Class<T> type) {
-        return Numbers.isBigInteger(type);
+    /**
+     * Checks if the provided type is {@link BigInteger}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link BigInteger}, {@code false} otherwise
+     */
+    public <T> boolean isBigInteger(@Nullable final Class<T> type) {
+        return type == BigInteger.class;
     }
 
-    public <T> boolean isLong(Class<T> type) {
-        return Numbers.isLong(type);
+    /**
+     * Checks if the provided type is {@link Long}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Long}, {@code false} otherwise
+     */
+    public <T> boolean isLong(@Nullable final Class<T> type) {
+        return type == Long.class || type == long.class;
     }
 
-    public <T> boolean isDouble(Class<T> type) {
-        return Numbers.isDouble(type);
+    /**
+     * Checks if the provided type is {@link Double}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Double}, {@code false} otherwise
+     */
+    public <T> boolean isDouble(@Nullable final Class<T> type) {
+        return type == Double.class || type == double.class;
     }
 
-    public <T> boolean isFloat(Class<T> type) {
-        return Numbers.isFloat(type);
+    /**
+     * Checks if the provided type is {@link Float}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Float}, {@code false} otherwise
+     */
+    public <T> boolean isFloat(@Nullable final Class<T> type) {
+        return type == Float.class || type == float.class;
     }
 
-    public <T> boolean isInteger(Class<T> type) {
-        return Numbers.isInteger(type);
+    /**
+     * Checks if the provided type is {@link Integer}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Integer}, {@code false} otherwise
+     */
+    public <T> boolean isInteger(@Nullable final Class<T> type) {
+        return type == Integer.class || type == int.class;
     }
 
-    public <T> boolean isShort(Class<T> type) {
-        return Numbers.isShort(type);
+    /**
+     * Checks if the provided type is {@link Short}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Short}, {@code false} otherwise
+     */
+    public <T> boolean isShort(@Nullable final Class<T> type) {
+        return type == Short.class || type == short.class;
     }
 
-    public <T> boolean isByte(Class<T> type) {
-        return Numbers.isByte(type);
+    /**
+     * Checks if the provided type is {@link Byte}.
+     *
+     * @param type the class type to check
+     * @param <T>  the type
+     * @return {@code true} if the type is {@link Byte}, {@code false} otherwise
+     */
+    public <T> boolean isByte(@Nullable final Class<T> type) {
+        return type == Byte.class || type == byte.class;
     }
 
 

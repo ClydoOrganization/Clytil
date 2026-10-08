@@ -22,16 +22,15 @@ package net.clydo.clytil;
 
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Utility class for number type casting and type checking.
  * This class provides methods to cast a given {@link Number} to various numeric types like {@link Byte}, {@link Short}, {@link Integer}, {@link Float}, {@link Double}, {@link Long}, {@link BigInteger}, and {@link BigDecimal}.
- * It also includes methods to check if a class corresponds to a specific numeric type.
  *
  * @author RezaNajafian
  */
@@ -39,8 +38,8 @@ import java.util.Objects;
 public class Numbers {
 
     @SuppressWarnings("unchecked")
-    public <T extends Number> T cast(Number input, T to) {
-        Objects.requireNonNull(to);
+    public <T extends Number> T cast(@Nullable final Number input, @NotNull final T to) {
+        Validates.require(to, "to");
 
         return Numbers.cast(input, (Class<? extends T>) to.getClass());
     }
@@ -54,26 +53,26 @@ public class Numbers {
      * @return the casted number of type {@code T}, or {@code null} if the input is {@code null}
      * @throws IllegalArgumentException if the input cannot be cast to the specified type
      */
-    public <T extends Number> T cast(Number input, Class<T> toType) {
-        Objects.requireNonNull(toType, "toType must not be null");
+    public <T extends Number> T cast(@Nullable final Number input, @NotNull final Class<T> toType) {
+        Validates.require(toType, "toType");
 
         if (input == null) {
             return null;
-        } else if (Numbers.isByte(toType)) {
+        } else if (Types.isByte(toType)) {
             return Numbers.castToByte(input);
-        } else if (Numbers.isShort(toType)) {
+        } else if (Types.isShort(toType)) {
             return Numbers.castToShort(input);
-        } else if (Numbers.isInteger(toType)) {
+        } else if (Types.isInteger(toType)) {
             return Numbers.castToInteger(input);
-        } else if (Numbers.isFloat(toType)) {
+        } else if (Types.isFloat(toType)) {
             return Numbers.castToFloat(input);
-        } else if (Numbers.isDouble(toType)) {
+        } else if (Types.isDouble(toType)) {
             return Numbers.castToDouble(input);
-        } else if (Numbers.isLong(toType)) {
+        } else if (Types.isLong(toType)) {
             return Numbers.castToLong(input);
-        } else if (Numbers.isBigInteger(toType)) {
+        } else if (Types.isBigInteger(toType)) {
             return Numbers.castToBigInteger(input);
-        } else if (Numbers.isBigDecimal(toType)) {
+        } else if (Types.isBigDecimal(toType)) {
             return Numbers.castToBigDecimal(input);
         } else {
             throw new IllegalArgumentException("Cannot cast " + input + " to " + toType);
@@ -174,94 +173,6 @@ public class Numbers {
     @SuppressWarnings("unchecked")
     public <T extends Number> @NotNull T castToByte(@NotNull Number anyNumber) {
         return (T) Byte.valueOf(anyNumber.byteValue());
-    }
-
-    /**
-     * Checks if the provided type is {@link BigDecimal}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link BigDecimal}, {@code false} otherwise
-     */
-    public <T> boolean isBigDecimal(Class<T> type) {
-        return type == BigDecimal.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link BigInteger}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link BigInteger}, {@code false} otherwise
-     */
-    public <T> boolean isBigInteger(Class<T> type) {
-        return type == BigInteger.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Long}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Long}, {@code false} otherwise
-     */
-    public <T> boolean isLong(Class<T> type) {
-        return type == Long.class || type == long.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Double}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Double}, {@code false} otherwise
-     */
-    public <T> boolean isDouble(Class<T> type) {
-        return type == Double.class || type == double.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Float}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Float}, {@code false} otherwise
-     */
-    public <T> boolean isFloat(Class<T> type) {
-        return type == Float.class || type == float.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Integer}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Integer}, {@code false} otherwise
-     */
-    public <T> boolean isInteger(Class<T> type) {
-        return type == Integer.class || type == int.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Short}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Short}, {@code false} otherwise
-     */
-    public <T> boolean isShort(Class<T> type) {
-        return type == Short.class || type == short.class;
-    }
-
-    /**
-     * Checks if the provided type is {@link Byte}.
-     *
-     * @param type the class type to check
-     * @param <T>  the type
-     * @return {@code true} if the type is {@link Byte}, {@code false} otherwise
-     */
-    public <T> boolean isByte(Class<T> type) {
-        return type == Byte.class || type == byte.class;
     }
 
     public <N extends Number> @NotNull N clamp(
