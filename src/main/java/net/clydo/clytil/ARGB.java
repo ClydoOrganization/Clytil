@@ -41,6 +41,7 @@ public class ARGB {
     public final int RED_SHIFT = 16;
     public final int GREEN_SHIFT = 8;
     public final int ALPHA_GREEN_MASK = ALPHA_MASK | GREEN_MASK;
+    public final int RED_BLUE_MASK = RED_MASK | BLUE_MASK;
 
     public int alpha(
             final int argb
@@ -291,30 +292,58 @@ public class ARGB {
     @UtilityClass
     public class Blending {
 
+        // Fixed-point weight of the end color in lerp: 256 is all of it
+        private final int LERP_ONE = 256;
+        private final int LERP_SHIFT = 8;
+        private final int LERP_ROUND = 0x00800080;
+
+        /**
+         * Blends two colors channel by channel, unpremultiplied, as a CSS color transition does.
+         *
+         * @param start the color at {@code 0}
+         * @param end   the color at {@code 1}
+         * @param delta how far from {@code start} to {@code end}; clamped to {@code [0, 1]}, so curves
+         *              that overshoot never wrap a channel
+         * @return the blend, rounded to the nearest channel values
+         * @see #lerp(int, int, double)
+         */
         public int lerp(
                 final int start,
                 final int end,
                 final float delta
         ) {
-            return color(
-                    Maths.lerp(red(start), red(end), delta),
-                    Maths.lerp(green(start), green(end), delta),
-                    Maths.lerp(blue(start), blue(end), delta),
-                    Maths.lerp(alpha(start), alpha(end), delta)
-            );
+            return lerp(start, end, (double) delta);
         }
 
+        /**
+         * Blends two colors channel by channel, unpremultiplied, as a CSS color transition does.
+         *
+         * <p>The blend runs in fixed point, two channels per multiply, with {@code delta} in steps of
+         * {@code 1/256}: allocation-free and cheap enough to call per vertex or per frame.</p>
+         *
+         * @param start the color at {@code 0}
+         * @param end   the color at {@code 1}
+         * @param delta how far from {@code start} to {@code end}; clamped to {@code [0, 1]}, so curves
+         *              that overshoot never wrap a channel
+         * @return the blend, rounded to the nearest channel values
+         */
         public int lerp(
                 final int start,
                 final int end,
                 final double delta
         ) {
-            return color(
-                    Maths.lerp(red(start), red(end), delta),
-                    Maths.lerp(green(start), green(end), delta),
-                    Maths.lerp(blue(start), blue(end), delta),
-                    Maths.lerp(alpha(start), alpha(end), delta)
-            );
+            if (start == end || !(delta > 0)) {
+                return start;
+            }
+            if (delta >= 1) {
+                return end;
+            }
+            val weight = (int) (delta * LERP_ONE + 0.5);
+            val keep = LERP_ONE - weight;
+            // Each 16-bit lane holds one channel times its weight, at most 255 * 256, so lanes never carry
+            val redBlue = ((start & RED_BLUE_MASK) * keep + (end & RED_BLUE_MASK) * weight + LERP_ROUND) >>> LERP_SHIFT;
+            val alphaGreen = (start >>> LERP_SHIFT & RED_BLUE_MASK) * keep + (end >>> LERP_SHIFT & RED_BLUE_MASK) * weight + LERP_ROUND;
+            return alphaGreen & ALPHA_GREEN_MASK | redBlue & RED_BLUE_MASK;
         }
 
         public int multiply(
