@@ -34,6 +34,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,6 +45,9 @@ import java.util.Map;
 
 @UtilityClass
 public class Jsons {
+
+    // Lets an array have any number of values
+    private static final int ANY_SIZE = -1;
 
     @Contract(pure = true)
     public @NotNull JsonElement parse(
@@ -54,6 +61,42 @@ public class Jsons {
             @NotNull final String text
     ) {
         return asObject(parse(text), "root");
+    }
+
+    /**
+     * Reads one JSON value to the end of the reader, which the caller closes.
+     */
+    public @NotNull JsonElement parse(
+            @NotNull final Reader reader
+    ) {
+        return JsonParser.parseReader(reader);
+    }
+
+    /**
+     * Reads one JSON object to the end of the reader, which the caller closes.
+     */
+    public @NotNull JsonObject parseObject(
+            @NotNull final Reader reader
+    ) {
+        return asObject(parse(reader), "root");
+    }
+
+    /**
+     * Reads one UTF-8 JSON value to the end of the stream, which the caller closes.
+     */
+    public @NotNull JsonElement parse(
+            @NotNull final InputStream input
+    ) {
+        return parse(new InputStreamReader(input, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Reads one UTF-8 JSON object to the end of the stream, which the caller closes.
+     */
+    public @NotNull JsonObject parseObject(
+            @NotNull final InputStream input
+    ) {
+        return asObject(parse(input), "root");
     }
 
     @Contract(pure = true)
@@ -212,6 +255,298 @@ public class Jsons {
             @NotNull final String member
     ) {
         return asStringList(require(object, member), member);
+    }
+
+    /**
+     * @return the numbers of the array, each read as {@code int}
+     */
+    @Contract(pure = true)
+    public int @NotNull [] asIntArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member
+    ) {
+        return asIntArray(element, member, ANY_SIZE);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     * @return the numbers of the array, each read as {@code int}
+     */
+    @Contract(pure = true)
+    public int @NotNull [] asIntArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member,
+            final int size
+    ) {
+        val array = asSizedArray(element, member, size);
+        val values = new int[array.size()];
+
+        for (var index = 0; index < values.length; index++) {
+            values[index] = asNumber(array.get(index), member + "[" + index + "]").intValue();
+        }
+
+        return values;
+    }
+
+    @Contract(pure = true)
+    public int @NotNull [] getIntArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        return asIntArray(require(object, member), member);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     */
+    @Contract(pure = true)
+    public int @NotNull [] getIntArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size
+    ) {
+        return asIntArray(require(object, member), member, size);
+    }
+
+    @Contract(value = "_, _, !null -> !null", pure = true)
+    public int @Nullable [] getIntArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int @Nullable [] fallback
+    ) {
+        return object.has(member) ? getIntArray(object, member) : fallback;
+    }
+
+    /**
+     * @param size how many numbers the array must have when present
+     */
+    @Contract(value = "_, _, _, !null -> !null", pure = true)
+    public int @Nullable [] getIntArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size,
+            final int @Nullable [] fallback
+    ) {
+        return object.has(member) ? getIntArray(object, member, size) : fallback;
+    }
+
+    /**
+     * @return the numbers of the array, each read as {@code long}
+     */
+    @Contract(pure = true)
+    public long @NotNull [] asLongArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member
+    ) {
+        return asLongArray(element, member, ANY_SIZE);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     * @return the numbers of the array, each read as {@code long}
+     */
+    @Contract(pure = true)
+    public long @NotNull [] asLongArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member,
+            final int size
+    ) {
+        val array = asSizedArray(element, member, size);
+        val values = new long[array.size()];
+
+        for (var index = 0; index < values.length; index++) {
+            values[index] = asNumber(array.get(index), member + "[" + index + "]").longValue();
+        }
+
+        return values;
+    }
+
+    @Contract(pure = true)
+    public long @NotNull [] getLongArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        return asLongArray(require(object, member), member);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     */
+    @Contract(pure = true)
+    public long @NotNull [] getLongArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size
+    ) {
+        return asLongArray(require(object, member), member, size);
+    }
+
+    @Contract(value = "_, _, !null -> !null", pure = true)
+    public long @Nullable [] getLongArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final long @Nullable [] fallback
+    ) {
+        return object.has(member) ? getLongArray(object, member) : fallback;
+    }
+
+    /**
+     * @param size how many numbers the array must have when present
+     */
+    @Contract(value = "_, _, _, !null -> !null", pure = true)
+    public long @Nullable [] getLongArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size,
+            final long @Nullable [] fallback
+    ) {
+        return object.has(member) ? getLongArray(object, member, size) : fallback;
+    }
+
+    /**
+     * @return the numbers of the array, each read as {@code float}
+     */
+    @Contract(pure = true)
+    public float @NotNull [] asFloatArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member
+    ) {
+        return asFloatArray(element, member, ANY_SIZE);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     * @return the numbers of the array, each read as {@code float}
+     */
+    @Contract(pure = true)
+    public float @NotNull [] asFloatArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member,
+            final int size
+    ) {
+        val array = asSizedArray(element, member, size);
+        val values = new float[array.size()];
+
+        for (var index = 0; index < values.length; index++) {
+            values[index] = asNumber(array.get(index), member + "[" + index + "]").floatValue();
+        }
+
+        return values;
+    }
+
+    @Contract(pure = true)
+    public float @NotNull [] getFloatArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        return asFloatArray(require(object, member), member);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     */
+    @Contract(pure = true)
+    public float @NotNull [] getFloatArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size
+    ) {
+        return asFloatArray(require(object, member), member, size);
+    }
+
+    @Contract(value = "_, _, !null -> !null", pure = true)
+    public float @Nullable [] getFloatArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final float @Nullable [] fallback
+    ) {
+        return object.has(member) ? getFloatArray(object, member) : fallback;
+    }
+
+    /**
+     * @param size how many numbers the array must have when present
+     */
+    @Contract(value = "_, _, _, !null -> !null", pure = true)
+    public float @Nullable [] getFloatArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size,
+            final float @Nullable [] fallback
+    ) {
+        return object.has(member) ? getFloatArray(object, member, size) : fallback;
+    }
+
+    /**
+     * @return the numbers of the array, each read as {@code double}
+     */
+    @Contract(pure = true)
+    public double @NotNull [] asDoubleArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member
+    ) {
+        return asDoubleArray(element, member, ANY_SIZE);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     * @return the numbers of the array, each read as {@code double}
+     */
+    @Contract(pure = true)
+    public double @NotNull [] asDoubleArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member,
+            final int size
+    ) {
+        val array = asSizedArray(element, member, size);
+        val values = new double[array.size()];
+
+        for (var index = 0; index < values.length; index++) {
+            values[index] = asNumber(array.get(index), member + "[" + index + "]").doubleValue();
+        }
+
+        return values;
+    }
+
+    @Contract(pure = true)
+    public double @NotNull [] getDoubleArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member
+    ) {
+        return asDoubleArray(require(object, member), member);
+    }
+
+    /**
+     * @param size how many numbers the array must have
+     */
+    @Contract(pure = true)
+    public double @NotNull [] getDoubleArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size
+    ) {
+        return asDoubleArray(require(object, member), member, size);
+    }
+
+    @Contract(value = "_, _, !null -> !null", pure = true)
+    public double @Nullable [] getDoubleArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final double @Nullable [] fallback
+    ) {
+        return object.has(member) ? getDoubleArray(object, member) : fallback;
+    }
+
+    /**
+     * @param size how many numbers the array must have when present
+     */
+    @Contract(value = "_, _, _, !null -> !null", pure = true)
+    public double @Nullable [] getDoubleArray(
+            @NotNull final JsonObject object,
+            @NotNull final String member,
+            final int size,
+            final double @Nullable [] fallback
+    ) {
+        return object.has(member) ? getDoubleArray(object, member, size) : fallback;
     }
 
     @Contract(pure = true)
@@ -630,6 +965,20 @@ public class Jsons {
         }
 
         return "a string";
+    }
+
+    private @NotNull JsonArray asSizedArray(
+            @NotNull final JsonElement element,
+            @NotNull final String member,
+            final int size
+    ) {
+        val array = asArray(element, member);
+
+        if (size != ANY_SIZE && array.size() != size) {
+            throw new JsonSyntaxException("Expected " + member + " to have " + size + " values, was " + array.size());
+        }
+
+        return array;
     }
 
     private @NotNull JsonSyntaxException mismatch(
